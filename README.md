@@ -3,6 +3,10 @@ BerkeleyVisionStats
 
 code for analyzing the Berkeley dataset of visual movies
 
+GETTING SET UP:
+
+Download Anaconda Python distribution:
+https://store.continuum.io/cshop/anaconda/
 
 
 LINKING UP DATA:

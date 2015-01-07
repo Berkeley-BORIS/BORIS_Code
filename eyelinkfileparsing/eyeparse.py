@@ -213,8 +213,7 @@ class EyeDataFrameCreator(object):
 if __name__ == '__main__':
     import os
 
-    data_fpath = os.path.join(os.path.expanduser('~'), 'Desktop', 'DATA_FOR_NEW_IMAC', 'eyes',
-        'data_processing', 'data', 'bwsnat5', 'bwsnat5.asc')
+    data_fpath = '../../data/raw/gaze/kre/kre_cafe.asc'
 
     eye_data_parser = EyeDataParser(data_fpath)
     print "Parsing..."
