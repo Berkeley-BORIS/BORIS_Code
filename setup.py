@@ -13,7 +13,7 @@ AUTHOR = "Bill Sprague and Emily Cooper"
 AUTHOR_EMAIL = "bill.sprague@berkeley.edu"
 DOWNLOAD_URL = "https://github.com/eacooper/BerkeleyVisionStats.git"
 LICENSE = "MIT"
-VERSION = "0.1.dev"
+VERSION = "0.1.dev0"
 
 from setuptools import setup
 
@@ -26,7 +26,7 @@ if __name__ == '__main__':
         license=LICENSE,
         download_url=DOWNLOAD_URL,
         version=VERSION,
-        packages=['bvs', 'bvs.utils', 'bvs.cli', 'bvs.eyelink-gazeconversions',
+        packages=['bvs', 'bvs.utils', 'bvs.cli', 'bvs.eyelink-gazeconversion',
                     'bvs.eyelinkfileparsing'],
         classifiers=[
                      'Intended Audience :: Science/Research',
