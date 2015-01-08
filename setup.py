@@ -38,6 +38,9 @@ if __name__ == '__main__':
                      'Operating System :: POSIX',
                      'Operating System :: Unix',
                      'Operating System :: MacOS'],
-        install_requires=['numpy', 'pandas'],
-        scripts=['bin/bvs'],
+        install_requires=['numpy', 'pandas', 'Click'],
+        # scripts=['bin/bvs'],
+        entry_points={
+                'console_scripts': ['bvs=bvs.cli:main']
+            }
         )
