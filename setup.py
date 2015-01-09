@@ -1,14 +1,12 @@
 # setup.py build file
 
-from __future__ import print_function
-
 DESCRIPTION = "Berkeley Vision Stats"
 LONG_DESCRIPTION = """\
 Berkeley Vision Stats is a project to analyze the statistics of the visual world during natural
 viewing.
 """
 
-NAME = "BerkeleyVisionStats"
+NAME = "berkeleyvisionstats"
 AUTHOR = "Bill Sprague and Emily Cooper"
 AUTHOR_EMAIL = "bill.sprague@berkeley.edu"
 DOWNLOAD_URL = "https://github.com/eacooper/BerkeleyVisionStats.git"
@@ -26,7 +24,7 @@ if __name__ == '__main__':
         license=LICENSE,
         download_url=DOWNLOAD_URL,
         version=VERSION,
-        packages=['bvs', 'bvs.utils', 'bvs.cli', 'bvs.eyelink-gazeconversion',
+        packages=['bvs', 'bvs.utils', 'bvs.cli', 'bvs.eyelink_gazeconversion',
                     'bvs.eyelinkfileparsing'],
         classifiers=[
                      'Intended Audience :: Science/Research',
