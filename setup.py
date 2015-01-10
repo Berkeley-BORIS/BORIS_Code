@@ -13,7 +13,7 @@ DOWNLOAD_URL = "https://github.com/eacooper/BerkeleyVisionStats.git"
 LICENSE = "MIT"
 VERSION = "0.1.dev0"
 
-from setuptools import setup
+from setuptools import setup, find_packages
 
 if __name__ == '__main__':
     setup(name=NAME,
@@ -24,10 +24,11 @@ if __name__ == '__main__':
         license=LICENSE,
         download_url=DOWNLOAD_URL,
         version=VERSION,
-        packages=['bvs', 'bvs.utils', 'bvs.cli', 'bvs.eyelink_gazeconversion',
-                    'bvs.eyelinkfileparsing'],
+        packages=find_packages(exclude='bvs.cli'),
         classifiers=[
+                     'Development Status :: 1 - Planning',
                      'Intended Audience :: Science/Research',
+                     'Programming Language :: Python :: 2'
                      'Programming Language :: Python :: 2.7',
                      #'Programming Language :: Python :: 3.3',
                      #'Programming Language :: Python :: 3.4',

@@ -5,10 +5,10 @@ calculating version, vergence, torsion, and the 3D fixation point.
 
 import numpy as np
 
-from ndssettings import *
+# from ndssettings import *
 
-DEG_PER_RAD = 180/np.pi
-RAD_PER_DEG = np.pi/180
+# DEG_PER_RAD = 180/np.pi
+# RAD_PER_DEG = np.pi/180
 
 def calc_target_locations(df, ipd):
 
