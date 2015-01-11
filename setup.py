@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 # setup.py build file
 
 DESCRIPTION = "Berkeley Vision Stats"
@@ -38,8 +39,7 @@ if __name__ == '__main__':
                      'Operating System :: Unix',
                      'Operating System :: MacOS'],
         install_requires=['numpy', 'pandas', 'Click'],
-        # scripts=['bin/bvs'],
         entry_points={
-                'console_scripts': ['bvs=bvs.cli:main']  # TODO Check that the generated executable properly references the current python environment
+                'console_scripts': ['bvs=bvs.cli:main']
             }
         )
