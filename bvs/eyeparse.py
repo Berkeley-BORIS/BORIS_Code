@@ -190,8 +190,8 @@ class EyeDataFrameCreator(object):
         dfs = {}
 
         for rep, data in data_dict.iteritems():
-            npdata = np.array(data)
-            times = np.array(npdata[:,0], dtype=int)
+            # npdata = np.array(data)
+            # times = np.array(npdata[:,0], dtype=int)
             dfs[rep] = pd.DataFrame(data)
 
         full_df = pd.concat(dfs)
