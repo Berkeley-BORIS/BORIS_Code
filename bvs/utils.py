@@ -3,12 +3,15 @@ Methods that process the eye movement data, including epipolar reprojection,
 calculating version, vergence, torsion, and the 3D fixation point.
 """
 
+from __future__ import absolute_import, division, print_function, unicode_literals
+
 import numpy as np
 
-# from ndssettings import *
+from bvs.physical import calibration_dist, HREF_DIST
 
-# DEG_PER_RAD = 180/np.pi
-# RAD_PER_DEG = np.pi/180
+_DEG_PER_RAD = 180.0/np.pi
+_RAD_PER_DEG = np.pi/180.0
+
 
 def calc_target_locations(df, ipd):
 
@@ -17,9 +20,9 @@ def calc_target_locations(df, ipd):
     target_dists = df['target', 'distance']
 
     # target x and y positions in world coords (z position is just target dist)
-    target_hypotenuses = target_dists * np.tan(target_eccentricities*RAD_PER_DEG)
-    x = target_hypotenuses * np.cos(target_eccentricities*RAD_PER_DEG)
-    y = target_hypotenuses * np.sin(target_eccentricities*RAD_PER_DEG)
+    target_hypotenuses = target_dists * np.tan(target_eccentricities*_RAD_PER_DEG)
+    x = target_hypotenuses * np.cos(target_eccentricities*_RAD_PER_DEG)
+    y = target_hypotenuses * np.sin(target_eccentricities*_RAD_PER_DEG)
 
     df['target', 'x'] = x
     df['target', 'y'] = y
@@ -32,15 +35,17 @@ def calc_target_locations(df, ipd):
     df['target', 'vergence'] = vergences
     df['target', 'version'] = versions
 
+
 def calc_fixation_pts(task_df, rt_df, ipd):
 
-    href_center = find_href_center(rt_df)
+    href_center = _find_href_center(rt_df)
     for df in [task_df, rt_df]:
         for eye in ['left', 'right']:
-            convert_href_to_ndsref(df, eye=eye, center=href_center)
-        ndsref_to_fixation(df, ipd)
+            _convert_href_to_ndsref(df, eye=eye, center=href_center)
+        _ndsref_to_fixation(df, ipd)
 
-def find_href_center(rt_df):
+
+def _find_href_center(rt_df):
 
     central_target = (rt_df['target', 'direction'] == 0) & \
                      (rt_df['target', 'eccentricity'] == 0) & \
@@ -55,7 +60,7 @@ def find_href_center(rt_df):
     return central.mean()
 
 
-def convert_href_to_ndsref(df, eye, center):
+def _convert_href_to_ndsref(df, eye, center):
 
     CM_PER_HREF_UNIT = calibration_dist / HREF_DIST
     # recenter href coordinates and convert to cm to get ndsref for each eye
@@ -68,7 +73,8 @@ def convert_href_to_ndsref(df, eye, center):
 
     df[eye, 'ndsref z'] = calibration_dist
 
-def ndsref_to_fixation(df, ipd):
+
+def _ndsref_to_fixation(df, ipd):
 
     ndsref = df[[('left', 'ndsref x'), ('left', 'ndsref y'), ('left', 'ndsref z'),
                  ('right', 'ndsref x'), ('right', 'ndsref y'), ('right', 'ndsref z')]]
@@ -95,6 +101,7 @@ def calc_vergence(fixation_pt, ipd):
 
     return vergence
 
+
 def calc_version(fixation_pt):
 
     fixation_pt = np.atleast_2d(fixation_pt)
@@ -114,6 +121,7 @@ def calc_version(fixation_pt):
 
     return (horz_version, vert_version)
 
+
 def calc_angle(v1, v2):
     """
     Calculate the angle between two sets of vectors v1 and v2 in degrees. Inputs
@@ -132,7 +140,8 @@ def calc_angle(v1, v2):
     cosarg = np.sum(v1N*v2N, axis=1)
     cosarg = np.min(np.c_[np.ones((cosarg.shape[0], 1)), cosarg], axis=1)
 
-    return np.arccos(cosarg) * DEG_PER_RAD
+    return np.arccos(cosarg) * _DEG_PER_RAD
+
 
 def get_angle_direction(v1, v2, axis):
     """
@@ -151,14 +160,15 @@ def get_angle_direction(v1, v2, axis):
 
     return directions
 
+
 def get_R(theta, phi):
     """
     Convert horizontal and vertical versions into a rotation matrix. phi is the vertical rotation
     and is positive DOWNWARD, theta is the horizontal rotation and is positive LEFTWARD.
     """
 
-    phi = phi * RAD_PER_DEG #phi is the angle of rotation about the x axis (ie vertical version)
-    theta = theta * RAD_PER_DEG # theta is the angle about the y-axis (ie horizontal version)
+    phi = phi * _RAD_PER_DEG #phi is the angle of rotation about the x axis (ie vertical version)
+    theta = theta * _RAD_PER_DEG # theta is the angle about the y-axis (ie horizontal version)
 
     R_phi = np.matrix([[1, 0, 0],
                        [0, np.cos(phi), -np.sin(phi)],
