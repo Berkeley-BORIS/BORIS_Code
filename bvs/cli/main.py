@@ -27,7 +27,10 @@ def parse(fpath):
     print("Creating DataFrames...")
     eye_dfs = EyeDataFrameCreator(eye_data_parser)
 
+    # calc_target_locations(eye_dfs.)
+
     # TODO Decide where to put the parsed data. Putting it in a test file for now.
+    # Probably want to make a list of current subjects and tasks
     out_fpath = './testing/parser_output'
     if not os.path.exists(out_fpath):
 	    os.makedirs(out_fpath)

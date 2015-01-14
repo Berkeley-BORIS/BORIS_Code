@@ -11,18 +11,29 @@ class EyeDataParser(object):
 
         self.data_fpath = data_fpath
 
-        self.subject_id = 'XYZ'
-        self.exp_id = 'NAT'
+        # TODO Think about recording subject and experiment id here
+        # self.subject_id = 'XYZ'
+        # self.exp_id = 'NAT'
 
+        # Make dictionaries to hold our data with repitions as keys
         self._task_data = {}
-        self._task_rep = 0  # don't have this in the data files, so we keep track manually
         self._radial_target_data = {}
-        self._frames = []
-        self._frame_num = -1
-        self._trash_data = []
-        self._current_eye_flags = {'L':'NONE', 'R':'NONE'}
-        self._current_data = self._trash_data
 
+        self._frame_data = []  # List of frame times and frame numbers
+
+        # Holds the DATA lines as a list of lists for the current section of the ascii file
+        self._current_data = []
+
+        self._task_rep = 0  # don't have this in the data files, so we keep track manually
+        self._frame_num = -1  # Keep track of the frame number we're on
+        self._current_eye_flags = {'L':'NONE', 'R':'NONE'}  # Eye flags for the current line
+
+        # Name for assigning to an empty list when we want to throw away data
+        # that's been accumulated so far.
+        self._trash_data = []
+
+        # Keep track of radial target information from each line that belongs
+        # to a radial target
         self._RT_dist = None
         self._RT_rep = None
         self._RT_eccentricity = None
@@ -38,7 +49,7 @@ class EyeDataParser(object):
 
     @property
     def frames(self):
-        return self._frames
+        return self._frame_data
 
     def parse_data(self):
 
@@ -53,7 +64,7 @@ class EyeDataParser(object):
                 try:
                     int(line_type)
                     line_type = 'DATA'
-                except ValueError:
+                except ValueError as e:
                     pass
 
                 # execute the appropriate function
@@ -61,10 +72,11 @@ class EyeDataParser(object):
                 parse_func_name = '_parse_' + line_type
                 try:
                     getattr(self, parse_func_name)(splitted_line)
-                except AttributeError:
+                except AttributeError as e:
                     print "Passing unhandled line type", line_type
                     setattr(self, parse_func_name, self._parse_unknown_line)
                     getattr(self, parse_func_name)(splitted_line)
+
 
     def _parse_DATA(self, data):
 
@@ -77,7 +89,7 @@ class EyeDataParser(object):
         eye_data = [np.nan if i=='.' else float(i) for i in data[1:-1]]
 
         full_data = [time] + eye_data + [self._current_eye_flags['L'], self._current_eye_flags['R']] + [data_quality]
-        RT_data = [self._RT_dist, self._RT_direction, self._RT_eccentricity, self._RT_rep]
+        RT_data = [self._RT_dist, self._RT_direction, self._RT_eccentricity]#, self._RT_rep]
         if not any(i is None for i in RT_data):  # if all RT data is valid
             full_data = full_data + RT_data  # extend the list with RT data
         self._current_data.append(full_data)
@@ -94,12 +106,12 @@ class EyeDataParser(object):
             self._RT_eccentricity = int(msg[4])
             self._RT_direction = int(msg[5])
 
-            if int(msg[6]):
+            if int(msg[6]):  # Check if RADIAL_TARGET is starting
                 rt_data = self._radial_target_data
                 if not self._RT_rep in rt_data.keys():
                     rt_data[self._RT_rep] = []
-                self._current_data = rt_data[self._RT_rep]
-            else:
+                self._current_data = rt_data[self._RT_rep]  # Pointer to RT data repitition
+            else:  # Clear current data if RADIAL_TARGET is ending.
                 self._current_data = self._trash_data
 
         elif msg_type == 'TASK_STARTED':
@@ -112,7 +124,7 @@ class EyeDataParser(object):
             task_data = self._task_data
             if not self._task_rep in task_data.keys():
                 task_data[self._task_rep] = []
-            self._current_data = task_data[self._task_rep]
+            self._current_data = task_data[self._task_rep]  # Pointer to Task data repitition
 
         elif msg_type == 'TASK_STOPPED':
             self._current_data = self._trash_data
@@ -153,7 +165,7 @@ class EyeDataParser(object):
         if int(button[3]):
             self._frame_num += 1
             time = int(button[1])
-            self._frames.append([time, self._frame_num])
+            self._frame_data.append([time, self._frame_num])
 
     def _parse_unknown_line(self, unk):
 
@@ -178,8 +190,8 @@ class EyeDataFrameCreator(object):
 
     def create_rt_df(self, rt_data):
 
-        col_arrays = [np.array(['left', 'left', 'left', 'right', 'right', 'right', 'left', 'right', 'both', 'target', 'target', 'target', 'target']),
-                      np.array(['href x', 'href y', 'pupil area', 'href x', 'href y', 'pupil area', 'flag', 'flag', 'quality', 'distance', 'direction', 'eccentricity', 'rep'])]
+        col_arrays = [np.array(['left', 'left', 'left', 'right', 'right', 'right', 'left', 'right', 'both', 'target', 'target', 'target']),
+                      np.array(['href x', 'href y', 'pupil area', 'href x', 'href y', 'pupil area', 'flag', 'flag', 'quality', 'distance', 'direction', 'eccentricity'])]
 
         rt_df = self._generate_dataframe(rt_data, col_arrays)
 
@@ -194,6 +206,8 @@ class EyeDataFrameCreator(object):
             # times = np.array(npdata[:,0], dtype=int)
             dfs[rep] = pd.DataFrame(data)
 
+        # Combine the repitition DataFrames together into one giant DataFrame
+        # with appropriately labeled columns
         full_df = pd.concat(dfs)
         full_df.reset_index(0, inplace=True)
         full_df.rename(columns={0:'time', 'level_0':'rep'}, inplace=True)

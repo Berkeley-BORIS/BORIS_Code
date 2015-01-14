@@ -83,8 +83,14 @@ def _ndsref_to_fixation(df, ipd):
     eyeref_re = ndsref['right'] - np.array([ipd/2.0, 0, 0])
 
     # TODO fit eyerefs vectors to plane and project them
+    _fit_to_plane()
     
     assert 0
+
+
+def sync_frames(something):
+
+    pass
 
 
 def calc_vergence(fixation_pt, ipd):
