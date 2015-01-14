@@ -34,6 +34,6 @@ def parse(fpath):
     out_fpath = './testing/parser_output'
     if not os.path.exists(out_fpath):
 	    os.makedirs(out_fpath)
-    eye_dfs.task_df.to_csv(os.path.join(out_fpath, 'task_output.csv'))
-    eye_dfs.radial_target_df.to_csv(os.path.join(out_fpath, 'rt_output.csv'))
-    eye_dfs.frame_df.to_csv(os.path.join(out_fpath, 'frame_output.csv'), index=False)
+    eye_dfs.task_df.to_hdf(os.path.join(out_fpath, 'task_output.h5'), 'task')
+    eye_dfs.radial_target_df.to_hdf(os.path.join(out_fpath, 'rt_output.h5'), 'rt')
+    eye_dfs.frame_df.to_hdf(os.path.join(out_fpath, 'frame_output.h5'), 'frames', index=False)
