@@ -88,7 +88,7 @@ def _ndsref_to_fixation(df, ipd):
     assert 0
 
 
-def sync_frames(something):
+def sync_frames(data_df, frames):
     """
     The following MATLAB code is what's used to syncronize the frames. It
     procedes as follows:
