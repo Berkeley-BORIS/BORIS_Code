@@ -1,9 +1,9 @@
-function [] = ET_parse(subj,activity,start_line)
+function [] = ET_parse(subj_name,activity,start_line)
 %%% Emily Cooper, Banks Lab, Nov 2011
 %%% PARSE AND SAVE DATA FROM EYELINK2 
 %%% 9/12 - no longer using BUTTONS now using MESSAGES
 
-fid = fopen( ['../../data/raw/gaze/' subj '/' subj '_' activity '.ASC'], 'r' ); %open eye tracking data file
+fid = fopen( ['../../data/raw/gaze/' subj_name '/' subj_name '_' activity '.ASC'], 'r' ); %open eye tracking data file
 
 %%% INITIALIZE DATA STRUCTURES
 cnt = 0; %counter
@@ -143,4 +143,4 @@ for b = 1:length(SR)
 end
 end
 
-save(['../../data/testing/gaze/' subj '/' subj '_' activity '.mat'],'D','D_orig','SL','SR','FL','FR','BL','BR','T','M','B','G','I','CH1','CH2','TK1','TK2','TG1','TG2')
+save(['../../data/testing/gaze/' subj_name '/' subj_name '_' activity '.mat'],'D','D_orig','SL','SR','FL','FR','BL','BR','T','M','B','G','I','CH1','CH2','TK1','TK2','TG1','TG2')

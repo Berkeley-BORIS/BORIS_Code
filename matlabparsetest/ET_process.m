@@ -1,10 +1,11 @@
+function [] = ET_process(subj_name,activity)
 %%% Emily Cooper, Banks Lab, Nov 2011
 %%% function to process eye tracking data (Emily, Nov 2011)
 % as of 7/30/2012, this function uses D_orig, to maintain timepoints with
 % saccades (used to only use fixation time points)
-function [] = ET_process(filename)
 
-% filename  = name of parsed mat file
+% subj = initials for subject
+% activity = name of activity
 
 %what does this function do?
 % (1) load the parsed session data (removed blinks, saccades, grabbed flags, etc)
@@ -22,21 +23,20 @@ function [] = ET_process(filename)
 %%drift corrections to them
 
 %load in subject ipd in cm
-subj_name = filename(1:3);
-ipd = importdata(['/Users/natdispstats/Documents/eyes/ipds/' subj_name '.txt']);
-
-href_dist = 100; %distance to calibration screen (cm) hardcoded now because it doesn't seem to change
+ipd = importdata(['../../data/raw/gaze/' subj_name '/' subj_name '_ipd.txt']);
 L = [-ipd/2 0 0]; R = [ipd/2 0 0]; %translation vectors from head reference coordinate system to each eye
 file_ext = 'proc'; %file extention to use when saving processed data
 warnings = {}; %initialize structure to contain warnings
 warning off all; %suppress warnings (the only warning you should get would be "matrix poorly conditioned" or "matrix almost singular." these are fine)
+
+href_dist = 100; %distance to calibration screen (cm) hardcoded now because it doesn't seem to change
 screen_cm = [121 68]; %screen dimensions in cm
 screen_pix = [1920 1080]; %screen dimensions in pixels
 
 
 %(1) LOAD IN PARSED DATA
 tic
-load(['/Users/natdispstats/Documents/eyes/data_processing/data/' filename '/' filename '.mat'])
+load(['../../data/testing/gaze/' subj_name '/' subj_name '_' activity '.mat'])
 display('file loaded')
 toc
 %D         = HREF fixation data (the important stuff, with blinks and saccades removed) (*timestamp* *left eye HREF x* *y* *pupil area* *right eye HREF x* *y* *pupil area*)
@@ -93,7 +93,7 @@ toc
 % (a) MAKE EYE VECTORS INTERSECT
 % (b) BUILD UP DATA MATRIX
 tic
-[Dcmint,DM] = analysis_steps(ipd,href_dist,Dcm,filename,L,R);
+[Dcmint,DM] = analysis_steps(ipd,href_dist,Dcm,L,R);
 display('processed data')
 toc
 %Dcmint = Dcm with plane adjustment
@@ -116,7 +116,7 @@ toc
 
 
 %(9) SAVE WORKSPACE
-save(['/Users/natdispstats/Documents/eyes/data_processing/data/' filename '/' filename '_' file_ext '.mat']);
+save(['../../data/testing/gaze/' subj_name '/' subj_name '_' activity '_' file_ext '.mat']);
 
 %(10) DISPLAY WARNINGS
 for j = 1:length(warnings)
@@ -252,7 +252,7 @@ Dcm(:,6) = -(Dcm(:,6) - re_center_y);
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-function [DM] = build_data_mat(ipd,href_dist,Dcmint,filename,L,R)
+function [DM] = build_data_mat(ipd,href_dist,Dcmint,L,R)
 %DM output (columns)
 % (1) timestamp 
 % (2) (3) (4) HREFCM LE x y z (normed)
@@ -350,7 +350,7 @@ href_re = bsxfun(@times,(href_dist./DM(:,13)),DM(:,11:13));
 DM(:,31:33) = bsxfun(@plus,href_re,[ipd/2 0 0]);
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-function [Dcmint,DM] = analysis_steps(ipd,href_dist,Dcm,filename,L,R)
+function [Dcmint,DM] = analysis_steps(ipd,href_dist,Dcm,L,R)
 
 % (7) MAKE VECTORS INTERSECT
 tic
@@ -360,12 +360,17 @@ toc
 
 % (8) BUILD UP FIXATION DATA MATRIX
 tic
-[DM] = build_data_mat(ipd,href_dist,Dcmint,filename,L,R);
+[DM] = build_data_mat(ipd,href_dist,Dcmint,L,R);
 display('built data matrix')
 toc
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 function [p2_new,q2_new] = fitplane(ipd,p2,q2,L,R)
+%
+% p2 & q2 are head reference normalized direction vectors from left and
+% right eyes
+%
+% L and R and location vectors for left and right eye
 
 %%% DATA
 p1 = L; % define translation
@@ -379,8 +384,8 @@ q2 = q2 / norm(q2); % make unit vector from direction
 q2 = q2 + q1; %translate back
 
 
-%%% SOLVE FOR PLANE THROUGH p1 AND p2, WHILE MINIMIZING DISTANCE TO
-%%% q1 AND q2: CONSTRAINED LEAST-SQUARES (solve: y = bz)
+%%% SOLVE FOR PLANE THROUGH p1 AND q1, WHILE MINIMIZING DISTANCE TO
+%%% p2 AND q2: CONSTRAINED LEAST-SQUARES (solve: y = bz)
 X      = [p1(1) p2(1) q1(1) q2(1)];
 Y      = [p1(2) p2(2) q1(2) q2(2)];
 Z      = [p1(3) p2(3) q1(3) q2(3)];
