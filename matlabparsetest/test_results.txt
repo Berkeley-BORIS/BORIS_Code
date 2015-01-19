@@ -1,0 +1,67 @@
+Spot checking the parsed output from reading Eyelink ASC file between old Matlab code and new Python code
+
+kre_cafe:
+
+task start:
+Py: 1653060
+TK1: 1653060
+
+task end: *** off by one, should be fine because TK2 is button press time point and Py is last sample before buttom press
+Py: 2789032
+TK2: 2789034
+
+task data:
+
+good fixation line:
+Py: 1	1737248	-2431	-3977	2433	340	-3542	2229	FIX	FIX	GOOD
+D_orig: 1737248	-2431	-3977	2433	340	-3542	2229
+
+good saccade line:
+Py: 1	2276232	-904	-2530	2148	1675	-2433	1822	SACC	SACC	GOOD
+D: missing (as it should be, since D excludes saccades)
+D_orig: 2276232	-904	-2530	2148	1675	-2433	1822
+
+blink line:
+Py: 1	2463256			0			0	BLINK	BLINK	BAD
+D_orig: missing
+
+last good line preceeding this blink:
+Py:	2462260
+D_orig: 2462260
+
+first good line after this blink:
+Py: 2466624
+D_orig: 2466624
+
+
+
+sah_inside:
+
+task2 start:
+Py: 1987030
+TK1: 1987030
+
+task2 end:
+Py: 2187122
+TK2: 2187125
+
+task data:
+
+bad fixation line:
+Py: 2	2187122	-1425	7292	1162	-20765	-7413	1933	FIX	FIX	BAD
+D_orig: missing
+
+target data:
+
+targets 50 cm rep 4 start:
+Py: 3001014
+TG1: 3001011
+
+targets 50cm rep 4 end:
+Py: 3012534
+TG1: 3012535
+
+
+good fixation line:
+Py: 4	3003114	1384	-425	629	402	-392	636	FIX	FIX	GOOD	50	0	3	4
+D_orig: 3003114	1384	-425	629	402	-392	636

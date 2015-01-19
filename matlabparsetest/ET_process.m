@@ -116,7 +116,7 @@ toc
 
 
 %(9) SAVE WORKSPACE
-save(['../../data/testing/gaze/' subj_name '/' subj_name '_' activity '_' file_ext '.mat']);
+save(['../../data/matlabparsetest/gaze/' subj_name '/' subj_name '_' activity '_' file_ext '.mat']);
 
 %(10) DISPLAY WARNINGS
 for j = 1:length(warnings)

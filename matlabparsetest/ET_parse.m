@@ -143,4 +143,4 @@ for b = 1:length(SR)
 end
 end
 
-save(['../../data/testing/gaze/' subj_name '/' subj_name '_' activity '.mat'],'D','D_orig','SL','SR','FL','FR','BL','BR','T','M','B','G','I','CH1','CH2','TK1','TK2','TG1','TG2')
+save(['../../data/matlabparsetest/gaze/' subj_name '/' subj_name '_' activity '.mat'],'D','D_orig','SL','SR','FL','FR','BL','BR','T','M','B','G','I','CH1','CH2','TK1','TK2','TG1','TG2')
