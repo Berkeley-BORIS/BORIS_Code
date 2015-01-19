@@ -24,7 +24,8 @@ q2 = q2 + q1;       % translate back in to cyclopean coordinates
 %%% SOLVE FOR PLANE THROUGH p1 AND q1, WHILE MINIMIZING DISTANCE TO
 %%% p2 AND q2: CONSTRAINED LEAST-SQUARES (solve: y = bz)
 %% the only degree of freedom is the rotation of the plane around the x axis that runs between p1 and q1
-%% so we find the least squares solution for this equation
+%% so we find the linear least squares solution for y = bz
+%% http://en.wikipedia.org/wiki/Linear_least_squares_(mathematics)
 %X      = [p1(1) p2(1) q1(1) q2(1)]';
 y      = [p1(2) p2(2) q1(2) q2(2)]';
 Z      = [p1(3) p2(3) q1(3) q2(3)]';
