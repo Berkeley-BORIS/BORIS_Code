@@ -145,25 +145,38 @@ def sync_frames(data_df, frames):
     dataframe before being passed to this function.
 
 """
+    # Find earliest and latest times contained within the data df. No point in
+    # looking at frames that are outside the data.
     earliest_time = data_df.index.levels[1].min()
     latest_time = data_df.index.levels[1].max()
     task_frames = frames[(frames['time']>earliest_time) & (frames['time']<latest_time)]
 
     for i, frame in task_frames.iterrows():
 
+        # For each frame find the time differences between it and the
+        # eyetracker data.
         time_diffs = data_df.index.levels[1] - frame['time']
         time_diffs = time_diffs.to_series().reset_index(drop=True)
         time_diffs.index = data_df.index
+
+        # Mask out those times that are more than 15 ms from the frame time.
         time_range_mask = np.abs(time_diffs) < 15
         data_of_interest = data_df.loc[time_range_mask]
+        # We only want to assign frames to GOOD eyemovements.
         good_data = data_of_interest[data_of_interest['both', 'quality'] == 'GOOD']
 
+        # If we have any eyemovements within 15ms of the frame
         if not data_of_interest.empty:
+            # Add their time diffs to the data df so we can spot check.
             indices_of_interest = data_of_interest.index
             data_df.loc[indices_of_interest, ('both', 'frame_time_diff')] = time_diffs
 
         indices_of_interest = good_data.index
+        # If the eyemovements with 15ms of the frame are also GOOD
         if not time_diffs[indices_of_interest].empty:
+
+            # Find the eyemovement closest to the frame and assign the frame to
+            # that eyemovement.
             smallest_time_diff_loc = np.abs(time_diffs.loc[indices_of_interest]).argmin()
             data_df.loc[smallest_time_diff_loc, ('both', 'frame_time')] = frame['time']
             data_df.loc[smallest_time_diff_loc, ('both', 'frame_count')] = frame['press num']
