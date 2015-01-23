@@ -90,61 +90,19 @@ def _ndsref_to_fixation(df, ipd):
 
 def sync_frames(data_df, frames):
     """
-    The following MATLAB code is what's used to syncronize the frames. It
-    procedes as follows:
-    *For each frame,
-    *Grab the timestamp
+    Synchronize the camera frames to the eyetracker data. The algorithm proceeds as follows:
+    *For each frame
+    *Grab the timestamp and capture number of the frame
     *Find indices of time points within 30ms window (+/- 15ms) of frame capture
-    *Grab GOOD fixation thats closest to shutter open (timestamp)
+    *Grab GOOD fixation thats closest to shutter open
     *Assign frame to that gaze position
-
-    MATLAB CODE
-    ----------------------------------------
-    timestamp = frames(j);
-
-    %grab indices of time points within 30ms window of frame capture
-    ind = find(DM(:,1) >= timestamp - 15 & DM(:,1) <= timestamp + 15);
-
-
-    %if this is a target present on the screen, add target coordinates
-    target = [ NaN NaN NaN ];
-    target_tilt_slant = [ NaN NaN ];
-    for k = 1:length(TargetsAll)
-        if ( (timestamp >= TargetsAll(k,15)) && (timestamp <= TargetsAll(k,16)) )
-            target = [TargetsAll(k,1:3)];
-            target_tilt_slant = [TargetsAll(k,11:12)];
-        end
-    end
-
-
-    %if there is at least 1 valid fixation within window
-    if ~isempty(ind)
-
-        %grab fixation location at the time point closest to shutter open
-        ind = ind(abs(timestamp - DM(ind, 1 )) == min(abs(timestamp - DM(ind, 1 ))));
-
-        fixation = DM(ind(1), 14:16 );
-        href_le = DM(ind(1), 28:30 );
-        href_re = DM(ind(1), 31:33);
-
-        %add data type flags
-        data_flag = 1; %fixation
-
-        SRdiff = SR-timestamp;
-        SLdiff = SL-timestamp;
-        if any(SRdiff(:,1) < 0 & SRdiff(:,2) > 0) || any(SLdiff(:,1) < 0 & SLdiff(:,2) > 0)
-            data_flag = 3; %saccade
-        end
-
-    else ...
-    END MATLAB----------------------------------------------
 
     For tkidrdp1 (tki_inside) and bwsure1 (kre_outside2) the last two radial targets lost their
     button presses, but the cameras kept running, so we have the images. We can sync these manually
     by back-calculating where the frames came from. The code to do this should fix up the "frames"
     dataframe before being passed to this function.
+    """
 
-"""
     # Find earliest and latest times contained within the data df. No point in
     # looking at frames that are outside the data.
     earliest_time = data_df.index.levels[1].min()
@@ -154,7 +112,7 @@ def sync_frames(data_df, frames):
     for i, frame in task_frames.iterrows():
 
         # For each frame find the time differences between it and the
-        # eyetracker data.
+        # eyetracker data and give it the same index as the data.
         time_diffs = data_df.index.levels[1] - frame['time']
         time_diffs = time_diffs.to_series().reset_index(drop=True)
         time_diffs.index = data_df.index
@@ -171,8 +129,8 @@ def sync_frames(data_df, frames):
             indices_of_interest = data_of_interest.index
             data_df.loc[indices_of_interest, ('both', 'frame_time_diff')] = time_diffs
 
+        # If any eyemovements with 15ms of the frame are also GOOD
         indices_of_interest = good_data.index
-        # If the eyemovements with 15ms of the frame are also GOOD
         if not time_diffs[indices_of_interest].empty:
 
             # Find the eyemovement closest to the frame and assign the frame to
