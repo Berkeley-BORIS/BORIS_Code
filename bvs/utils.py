@@ -32,8 +32,8 @@ def calc_target_locations(df, ipd):
     vergences = calc_vergence(target_expected_fixation_pts, ipd)
     versions = calc_version(target_expected_fixation_pts)
 
-    df['target', 'vergence'] = vergences
-    df['target', 'version'] = versions
+    df['target', 'horizontal version'] = versions[0]
+    df['target', 'vertical version'] = versions[1]
 
 
 def calc_fixation_pts(task_df, rt_df, ipd):
@@ -84,13 +84,60 @@ def _ndsref_to_fixation(df, ipd):
 
     # TODO fit eyerefs vectors to plane and project them
     _fit_to_plane()
-    
+
     assert 0
 
 
-def sync_frames(something):
+def sync_frames(data_df, frames):
+    """
+    Synchronize the camera frames to the eyetracker data. The algorithm proceeds as follows:
+    *For each frame
+    *Grab the timestamp and capture number of the frame
+    *Find indices of time points within 30ms window (+/- 15ms) of frame capture
+    *Grab GOOD fixation thats closest to shutter open
+    *Assign frame to that gaze position
 
-    pass
+    For tkidrdp1 (tki_inside) and bwsure1 (kre_outside2) the last two radial targets lost their
+    button presses, but the cameras kept running, so we have the images. We can sync these manually
+    by back-calculating where the frames came from. The code to do this should fix up the "frames"
+    dataframe before being passed to this function.
+    """
+
+    # Find earliest and latest times contained within the data df. No point in
+    # looking at frames that are outside the data.
+    earliest_time = data_df.index.levels[1].min()
+    latest_time = data_df.index.levels[1].max()
+    task_frames = frames[(frames['time']>earliest_time) & (frames['time']<latest_time)]
+
+    for i, frame in task_frames.iterrows():
+
+        # For each frame find the time differences between it and the
+        # eyetracker data and give it the same index as the data.
+        time_diffs = data_df.index.levels[1] - frame['time']
+        time_diffs = time_diffs.to_series().reset_index(drop=True)
+        time_diffs.index = data_df.index
+
+        # Mask out those times that are more than 15 ms from the frame time.
+        time_range_mask = np.abs(time_diffs) < 15
+        data_of_interest = data_df.loc[time_range_mask]
+        # We only want to assign frames to GOOD eyemovements.
+        good_data = data_of_interest[data_of_interest['both', 'quality'] == 'GOOD']
+
+        # If we have any eyemovements within 15ms of the frame
+        if not data_of_interest.empty:
+            # Add their time diffs to the data df so we can spot check.
+            indices_of_interest = data_of_interest.index
+            data_df.loc[indices_of_interest, ('both', 'frame_time_diff')] = time_diffs
+
+        # If any eyemovements with 15ms of the frame are also GOOD
+        indices_of_interest = good_data.index
+        if not time_diffs[indices_of_interest].empty:
+
+            # Find the eyemovement closest to the frame and assign the frame to
+            # that eyemovement.
+            smallest_time_diff_loc = np.abs(time_diffs.loc[indices_of_interest]).argmin()
+            data_df.loc[smallest_time_diff_loc, ('both', 'frame_time')] = frame['time']
+            data_df.loc[smallest_time_diff_loc, ('both', 'frame_count')] = frame['press num']
 
 
 def calc_vergence(fixation_pt, ipd):
