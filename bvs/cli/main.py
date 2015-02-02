@@ -4,6 +4,7 @@ import click
 
 from bvs.eyeparse import *
 from bvs.utils import *
+from ..framesync import *
 
 @click.group()
 def main():
@@ -39,8 +40,17 @@ def parse(fpath):
 
     print("Calculating target locations and fixations...")
     calc_target_locations(eye_dfs.radial_target_df, ipd)
-
     print("Done!\n")
+
+
+    # FIXME This could cause problems if there are multiple framesync files in
+    # the subject directory. Should change this when we switch control to
+    # specify subject and task instead of fpath
+    manual_frame_sync_fpath = glob(os.path.join(dpath, '*.framesync'))
+    if manual_frame_sync_fpath:
+        print("Found manual frame sync file. Adding the missing frames...")
+        eye_dfs.frame_df = fix_missing_frames(eye_dfs.frame_df, manual_frame_sync_fpath[0])
+        print("Frames added.\n")
 
     print("Syncing radial target frames...")
     sync_frames(eye_dfs.radial_target_df, eye_dfs.frame_df)
