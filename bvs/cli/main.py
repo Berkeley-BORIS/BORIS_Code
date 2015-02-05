@@ -13,23 +13,16 @@ def main():
 
 
 @main.command()
-@click.argument('fpath')#, help='Path to the EyeLink ascii file.')
-def parse(fpath):
+@click.argument('subject_id')
+@click.argument('task_id')
+def parse(subject_id, task_id):
     """
     Parse an ascii eyelink file into a file with gaze info
     """
 
-    import os
-    from glob import glob
+    subject = BORISSubject(subject_id)
 
-    dpath, fname = os.path.split(fpath)
-    print(dpath)
-    ipd_fpath = glob(os.path.join(dpath, '*_ipd.txt'))[0]
-
-    with open(ipd_fpath, 'r') as f:
-        ipd = float(f.read())
-
-    eye_data_parser = EyeDataParser(fpath)
+    eye_data_parser = EyeDataParser(subject.raw_ascii_fpath(task_id))
     print("Parsing...")
     eye_data_parser.parse_data()
     print("Done!\n")
@@ -39,17 +32,13 @@ def parse(fpath):
     print("Done!\n")
 
     print("Calculating target locations and fixations...")
-    calc_target_locations(eye_dfs.radial_target_df, ipd)
+    calc_target_locations(eye_dfs.radial_target_df, subject.ipd)
     print("Done!\n")
 
-
-    # FIXME This could cause problems if there are multiple framesync files in
-    # the subject directory. Should change this when we switch control to
-    # specify subject and task instead of fpath
-    manual_frame_sync_fpath = glob(os.path.join(dpath, '*.framesync'))
-    if manual_frame_sync_fpath:
-        print("Found manual frame sync file. Adding the missing frames...")
-        eye_dfs.frame_df = fix_missing_frames(eye_dfs.frame_df, manual_frame_sync_fpath[0])
+    if subject.needs_framesync(task_id):
+        print("Subject {0} lost button presses during {1} task. " +  # FIXME Not sure this will work
+              "Adding the missing frames...".format(subject.subject_id, task_id))
+        eye_dfs.frame_df = fix_missing_frames(eyedfs.frame_df, subject.framesync_fpath(task_id))
         print("Frames added.\n")
 
     print("Syncing radial target frames...")
@@ -58,13 +47,8 @@ def parse(fpath):
     sync_frames(eye_dfs.task_df, eye_dfs.frame_df)
     print("Done!\n")
 
-    # TODO Decide where to put the parsed data. Putting it in a test file for now.
-    # Probably want to make a list of current subjects and tasks
-    out_fpath = './testing/parser_output'
-    print("Saving data frames to {}".format(out_fpath))
-    if not os.path.exists(out_fpath):
-	    os.makedirs(out_fpath)
-    eye_dfs.task_df.to_hdf(os.path.join(out_fpath, 'task_output.h5'), 'task')
-    eye_dfs.radial_target_df.to_hdf(os.path.join(out_fpath, 'rt_output.h5'), 'rt')
-    eye_dfs.frame_df.to_hdf(os.path.join(out_fpath, 'frame_output.h5'), 'frames', index=False)
+    print("Saving data frames to {}".format(subject.parsed_dpath))
+    eyedfs.task_df.to_hdf(subject.task_fpath(task_id), 'task')
+    eyedfs.radial_target_df.to_hdf(subject.radial_target_fpath(task_id), 'rt')
+    eyedfs.frame_df.to_hdf(subject.frame_fpath(task_id), 'frames', index=False)
     print("Parsing complete.\n")
