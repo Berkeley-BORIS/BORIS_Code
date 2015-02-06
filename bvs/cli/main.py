@@ -5,6 +5,7 @@ import click
 from bvs.eyeparse import *
 from bvs.utils import *
 from ..framesync import *
+from ..subject import *
 
 @click.group()
 def main():
