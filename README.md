@@ -1,4 +1,4 @@
-BerkeleyVisionStats
+BORIS ( BinOcular Retinal Image Statistics ) Code
 ===================
 
 code for analyzing the Berkeley dataset of visual movies
@@ -25,5 +25,15 @@ Adding other raw datasets:
 (2) place eyelink ASC (SUBJ_RECORDING.asc) into ../data/raw/gaze/SUBJ/
 (3) place stereo camera images in ../data/raw/scene/SUBJ/RECORDING
 (4) in eyes/ipds create a text file called XXX.txt (subject's 3 initials) and enter ipd in cm
+
+HOW TO INSTALL BORIS CONDA COMMANDLINE TOOL:
+
+conda install bvs
+check for updates somehow?
+
+DATA ANALYSIS:
+
+from code folder: python setup.py install
+
 
 
