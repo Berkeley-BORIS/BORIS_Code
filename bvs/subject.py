@@ -9,7 +9,7 @@ from os.path import join, exists
 
 import yaml
 
-from .config import *
+from . import config
 
 
 class BORISSubject(object):
@@ -27,7 +27,11 @@ class BORISSubject(object):
 
     @property
     def raw_gaze_dpath(self):
-        return join(root_data_dpath, 'raw', 'gaze', self.subject_id)
+        return join(config.raw_gaze_dpath, self.subject_id)
+
+    @property
+    def processed_gaze_dpath(self):
+        return join(config.processed_gaze_dpath, self.subject_id)
 
     @property
     def ipd(self):
@@ -59,8 +63,25 @@ class BORISSubject(object):
         else:
             return False
 
+    def framesync_fpath(self, task_id):
+        """Returns the file path the framesync file."""
+
+        framesync_fname = "{subject_id}_{task_id}.framesync".format(
+                            subject_id=self.subject_id, task_id=task_id)
+
+        return join(self.raw_gaze_dpath, framesync_fname)
+
+    def gaze_data_fpath(self, task_id):
+        """Returns the file path to the gaze data file for this subject and task.
+        """
+
+        task_fname = "{subject_id}_{task_id}.h5".format(
+                      subject_id=self.subject_id, task_id=task_id)
+
+        return join(self.processed_gaze_dpath, task_fname)
+
     def _load_eyeinfo(self):
 
         eyeinfo_fname = "{subject_id}.eyeinfo".format(subject_id=self.subject_id)
-        with open(join(self.raw_gaze_dpath, eyeinfo_fname)) as f:
+        with open(join(self.raw_gaze_dpath, eyeinfo_fname), 'r') as f:
             self._eyeinfo = yaml.load(f)

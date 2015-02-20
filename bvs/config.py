@@ -25,11 +25,12 @@ def write_boris_rc(rc, fpath):
 
 rc = load_boris_rc(rc_path)
 
-DEFAULT_RAW_DNAME = 'raw'
-DEFAULT_GAZE_DNAME = 'gaze'
-DEFAULT_REGISTRATION_DNAME = 'cam2eye_registration'
-DEFAULT_SCENE_DNAME = 'scene'
-DEFAULT_STEREOCALIB_DNAME = 'stereocalibration'
+_DEFAULT_RAW_DNAME = 'raw'
+_DEFAULT_PROCESSED_DNAME = 'processed'
+_DEFAULT_GAZE_DNAME = 'gaze'
+_DEFAULT_REGISTRATION_DNAME = 'cam2eye_registration'
+_DEFAULT_SCENE_DNAME = 'scene'
+_DEFAULT_STEREOCALIB_DNAME = 'stereocalibration'
 
 root_data_dpath = rc.get('root_data_dpath', None)
 
@@ -38,12 +39,25 @@ if root_data_dpath is None:
         "boris config --root=path/to/data/root\n" +
         "to tell BORIS where the data is located.")
 
-raw_dname = rc.get('raw_dname', DEFAULT_RAW_DNAME)
+raw_dname = rc.get('raw_dname', _DEFAULT_RAW_DNAME)
 
-gaze_dname = rc.get('gaze_dname', DEFAULT_GAZE_DNAME)
-registration_dname = rc.get('registration_dname', DEFAULT_REGISTRATION_DNAME)
-scene_dname = rc.get('scene_dname', DEFAULT_SCENE_DNAME)
-stereocalibration_dname = rc.get('stereocalibration_dname', DEFAULT_STEREOCALIB_DNAME)
+gaze_dname = rc.get('gaze_dname', _DEFAULT_GAZE_DNAME)
+registration_dname = rc.get('registration_dname', _DEFAULT_REGISTRATION_DNAME)
+scene_dname = rc.get('scene_dname', _DEFAULT_SCENE_DNAME)
+stereocalibration_dname = rc.get('stereocalibration_dname', _DEFAULT_STEREOCALIB_DNAME)
 
+raw_gaze_dpath = rc.get('raw_gaze_dpath', join(root_data_dpath, raw_dname, gaze_dname))
+registration_dpath = rc.get('registration_dpath',
+    join(root_data_dpath, raw_dname, registration_dname))
+raw_scene_dpath = rc.get('raw_scene_dpath',
+    join(root_data_dpath, raw_dname, scene_dname))
+stereocalibration_dpath = rc.get('stereocalibration_dpath',
+    join(root_data_dpath, raw_dname, stereocalibration_dname))
 
+processed_dname = rc.get('processed_dname', _DEFAULT_PROCESSED_DNAME)
 
+processed_gaze_dpath = rc.get('processed_dpath',
+    join(root_data_dpath, processed_dname, gaze_dname))
+
+processed_scene_dpath = rc.get('processed_scene_dpath',
+    join(root_data_dpath, processed_dname, scene_dname))
