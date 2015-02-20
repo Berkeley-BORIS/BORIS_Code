@@ -1,3 +1,3 @@
-from __future__ import absolute_import
+from __future__ import absolute_import, print_function, division, unicode_literals
 
-from bvs.cli.main import *
+from .cli.main import *
