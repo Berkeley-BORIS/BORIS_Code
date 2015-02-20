@@ -1,18 +1,18 @@
 #!/usr/bin/env python
 # setup.py build file
 
-DESCRIPTION = "Berkeley Vision Stats"
+DESCRIPTION = "BinOcular Retinal Image Statistics"
 LONG_DESCRIPTION = """\
-Berkeley Vision Stats is a project to analyze the statistics of the visual world during natural
-viewing.
+Berkeley BORIS is a project to analyze the statistics of the visual world
+during natural viewing.
 """
 
-NAME = "berkeleyvisionstats"
+NAME = "boris"
 AUTHOR = "Bill Sprague and Emily Cooper"
 AUTHOR_EMAIL = "bill.sprague@berkeley.edu"
-DOWNLOAD_URL = "https://github.com/eacooper/BerkeleyVisionStats.git"
+DOWNLOAD_URL = "https://github.com/Berkeley-BORIS/BORIS_Code.git"
 LICENSE = "MIT"
-VERSION = "0.1.dev0"
+VERSION = "0.1.dev2"
 
 from setuptools import setup, find_packages
 
@@ -25,7 +25,7 @@ if __name__ == '__main__':
         license=LICENSE,
         download_url=DOWNLOAD_URL,
         version=VERSION,
-        packages=find_packages(exclude='bvs.cli'),
+        packages=find_packages(exclude='boris.cli'),
         classifiers=[
                      'Development Status :: 1 - Planning',
                      'Intended Audience :: Science/Research',
@@ -38,8 +38,8 @@ if __name__ == '__main__':
                      'Operating System :: POSIX',
                      'Operating System :: Unix',
                      'Operating System :: MacOS'],
-        install_requires=['numpy', 'pandas', 'Click'],
+        install_requires=['numpy', 'pandas', 'Click', 'pytables', 'pyyaml'],
         entry_points={
-                'console_scripts': ['bvs=bvs.cli:main']
+                'console_scripts': ['boris=boris.cli:main']
             }
         )

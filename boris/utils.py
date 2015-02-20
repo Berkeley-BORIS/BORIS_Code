@@ -7,7 +7,7 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 
 import numpy as np
 
-from bvs.physical import calibration_dist, HREF_DIST
+from .physical import calibration_dist, HREF_DIST
 
 _DEG_PER_RAD = 180.0/np.pi
 _RAD_PER_DEG = np.pi/180.0
