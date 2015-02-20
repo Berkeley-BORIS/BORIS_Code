@@ -175,6 +175,7 @@ class EyeDataFrameCreator(object):
 
     def __init__(self, parser):
 
+        # NOTE These are currently publicly settable
         self.task_df = self.create_task_df(parser.task_data)
         self.radial_target_df = self.create_rt_df(parser.radial_target_data)
         self.frame_df = self.create_frame_df(parser.frames)
@@ -202,8 +203,6 @@ class EyeDataFrameCreator(object):
         dfs = {}
 
         for rep, data in data_dict.iteritems():
-            # npdata = np.array(data)
-            # times = np.array(npdata[:,0], dtype=int)
             dfs[rep] = pd.DataFrame(data)
 
         # Combine the repitition DataFrames together into one giant DataFrame
