@@ -2,10 +2,11 @@ from __future__ import absolute_import, print_function, division
 
 import click
 
-from bvs.eyeparse import *
-from bvs.utils import *
+from ..eyeparse import *
+from ..utils import *
 from ..framesync import *
 from ..subject import *
+from ..config import *
 
 @click.group()
 def main():
@@ -53,3 +54,15 @@ def parse(subject_id, task_id):
     eyedfs.radial_target_df.to_hdf(subject.radial_target_fpath(task_id), 'rt')
     eyedfs.frame_df.to_hdf(subject.frame_fpath(task_id), 'frames', index=False)
     print("Parsing complete.\n")
+
+
+@main.command()
+@click.option('--root')
+def config(root):
+
+    from os.path import abspath, expanduser
+
+    if root:
+        rc['root_data_dpath']=abspath(expanduser(root))
+
+    write_boris_rc(rc, rc_path)

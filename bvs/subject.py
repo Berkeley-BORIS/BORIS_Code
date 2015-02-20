@@ -11,7 +11,6 @@ import yaml
 
 from .config import *
 
-root_data_dpath = rc['root_data_dpath']
 
 class BORISSubject(object):
 

@@ -17,6 +17,12 @@ def load_boris_rc(fpath):
 
     return yaml.load(open(fpath, 'r'))
 
+def write_boris_rc(rc, fpath):
+
+    f = open(fpath, 'w')  # currently this completely overwrites the rc file
+    f.write(yaml.safe_dump(rc, default_flow_style=False))
+    f.close()
+
 rc = load_boris_rc(rc_path)
 
 DEFAULT_RAW_DNAME = 'raw'
@@ -26,6 +32,11 @@ DEFAULT_SCENE_DNAME = 'scene'
 DEFAULT_STEREOCALIB_DNAME = 'stereocalibration'
 
 root_data_dpath = rc.get('root_data_dpath', None)
+
+if root_data_dpath is None:
+    print("WARNING: BORIS has not been configured. Please run\n" +
+        "boris config --root=path/to/data/root\n" +
+        "to tell BORIS where the data is located.")
 
 raw_dname = rc.get('raw_dname', DEFAULT_RAW_DNAME)
 
