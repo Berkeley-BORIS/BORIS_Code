@@ -41,12 +41,12 @@ if(plotResults)
     %%% MAKE SURE EVERYTHING WORKED
     P       = [u(1) -1 u(2)];                       % vector normal to plane
     P       = P / norm(P);
-    thp     = asind( P*((p2-p1)'/norm(p2-p1)) );            % angle between original
-    thq     = asind( P*((q2-q1)'/norm(q2-q1)) );            %  vector and plane
-    thp_new = asind( P*((p2_new-p1)'/norm(p2_new-p1)) );    % angle between new
-    thq_new = asind( P*((q2_new-q1)'/norm(q2_new-q1)) );    %  vector and plane
+    thp     = asind( P*((p2)'/norm(p2)) );            % angle between original
+    thq     = asind( P*((q2)'/norm(q2)) );            %  vector and plane
+    thp_new = asind( P*((p2_new)'/norm(p2_new)) );    % angle between new
+    thq_new = asind( P*((q2_new)'/norm(q2_new)) );    %  vector and plane
     
-    if thp_new > 1e-100 || thp_new > 1e-100
+    if abs(thp_new) > 1e-15 || abs(thq_new) > 1e-15
         error('projection to epipolar plane failed');
     end
     
