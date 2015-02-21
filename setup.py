@@ -38,7 +38,7 @@ if __name__ == '__main__':
                      'Operating System :: POSIX',
                      'Operating System :: Unix',
                      'Operating System :: MacOS'],
-        install_requires=['numpy', 'pandas', 'Click', 'pyyaml'],
+        install_requires=['numpy', 'pandas', 'Click', 'tables', 'pyyaml'],
         entry_points={
                 'console_scripts': ['boris=boris.cli:main']
             }
