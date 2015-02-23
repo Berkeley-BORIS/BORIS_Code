@@ -2,4 +2,4 @@ numpy>=1.9
 pandas>=0.15
 click>=3.0
 pyyaml>=3.0
-tables>=3.0
+pytables>=3.0
