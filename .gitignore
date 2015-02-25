@@ -4,3 +4,5 @@ dist/
 *.egg-info/
 *.pyc
 .ipynb_checkpoints/
+*.sublime-project
+*.sublime-workspace
