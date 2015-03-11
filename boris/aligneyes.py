@@ -60,7 +60,7 @@ def align_eyes(fix_L, fix_R, loc_L, loc_R, check_results=0, plot_results=0):
         th_R_new = np.degrees(np.arcsin(np.dot( P, (fix_R_new) / np.linalg.norm(fix_R_new))))
 
         print "Align Eyes Adjustment (L/R in deg)", th_L, th_R
-        if np.absolute(th_L_new) > 1e-100 or np.absolute(th_R_new) > 1e-100:
+        if np.absolute(th_L_new) > 1e-100 or np.absolute(th_R_new) > 1e-100: # NOTE e-100?! I think we can allow for a little more floating point errors than that!
             raise ValueError("Projection to epipolar plane failed")
 
     if plot_results:

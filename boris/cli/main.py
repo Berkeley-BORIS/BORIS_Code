@@ -85,4 +85,23 @@ def config(root, set):
 # def info():
 
 #     template = /
-# """
+# """o
+
+@main.command()
+@click.argument('subject_id')
+@click.argument('session_id')
+@click.argument('task_id')
+def original_eye_anlaysis(subject_id, session_id, task_id):
+
+    subject = BORISSubject(subject_id)
+    session_gaze_data = pd.HDFStore(subject.session_gaze_data_fpath(session_id),
+                                    mode='r')
+    dm = DataManager(root=root_data_dpath)
+    session_gaze_data = dm.gaze_data(subj_id, session_id)
+    task_gaze_data = extract_task(session_gaze_data, task_data_dpath)
+    # load subject metadata
+    # do fit-plane
+    # do vergence correction
+    # calc version and vergence
+
+    # repeat for all tasks
