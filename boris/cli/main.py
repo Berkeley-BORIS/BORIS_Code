@@ -94,7 +94,7 @@ def config(root, set):
 def original_eye_anlaysis(subject_id, session_id, task_id):
 
     subject = BORISSubject(subject_id)
-    session_dm = DataManager(root=root_data_dpath)
+    session_dm = DataManager(root=root_data_dpath)  # TODO create DataManager class
     task_dm = DataManager(root=task_data_dpath)
 
     session_gaze_data = session_dm.get_gaze_data(subj_id, session_id)
@@ -102,9 +102,15 @@ def original_eye_anlaysis(subject_id, session_id, task_id):
     task_gaze_data = extract_task(session_gaze_data, task_data_dpath)
     convert_href_to_bref(task_gaze_data, rt_data.copy())
     align_eyes(task_gaze_data, subject.ipd)
+    calc_fixation_pts(task_gaze_data, subject.ipd)  # TODO update to just calc fixation
+    calc_version(task_gaze_data)  # TODO update to handle dataframes
+    calc_vergence(task_gaze_data, subject.ipd)  # TODO update to handle dataframes
 
     convert_href_to_bref(rt_data, rt_data.copy())
     align_eyes(rt_data, subject.ipd)
+    calc_fixation_pts(rt_data, subject.ipd)
+    calc_version(rt_data)
+    calc_vergence(rt_data, subject.ipd)
 
     print("Saving dataframes to {}".format(task_dm.gaze_data_fpath(subject_id, task_id)))
     if not exists(task_dm.gaze_data_dpath(subject_id, task_id)):
@@ -114,10 +120,3 @@ def original_eye_anlaysis(subject_id, session_id, task_id):
         store['task'] = task_gaze_data
         store['rt'] = rt_data
 
-
-    # load subject metadata
-    # do fit-plane
-    # do vergence correction
-    # calc version and vergence
-
-    # repeat for all tasks

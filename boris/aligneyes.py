@@ -5,9 +5,29 @@ from mpl_toolkits.mplot3d import Axes3D
 
 def align_eyes(gaze_df, ipd):
 
-    df = gaze_df.loc[:, (['left', 'right'], ['bref x, bref y, bref z'])].copy()
-    
+    df = gaze_df.loc[:, (['left', 'right'], ['bref x', 'bref y', 'bref z'])].copy()
+    fix_L = []
+    fix_R = []
+    idxs = []
 
+    for idx, row in df.iterrows():
+        new_fix_L, new_fix_R = fit_plane(np.atleast_2d(row['left'].values).T,
+                                         np.atleast_2d(row['right'].values).T,
+                                         ipd, check_results=True)
+
+        fix_L.append(new_fix_L.squeeze())
+        fix_R.append(new_fix_R.squeeze())
+        idxs.append(idx)
+
+    midx = pd.MultiIndex.from_tuples(idxs, names=['rep', 'time'])
+    cols = ['bref x', 'bref y', 'bref z']
+    fix_L = pd.DataFrame(np.array(fix_L), index=midx,
+                         columns=pd.MultiIndex.from_product([['left'], cols]))
+    fix_R = pd.DataFrame(np.array(fix_R), index=midx,
+                         columns=pd.MultiIndex.from_product([['right'], cols]))
+
+    gaze_df.loc[:, ('left',['bref x', 'bref y', 'bref z'])] = fix_L
+    gaze_df.loc[:, ('right',['bref x', 'bref y', 'bref z'])] = fix_R
 
 
 def fit_plane(fix_L, fix_R, ipd, check_results=False, plot_results=False):
@@ -20,7 +40,7 @@ def fit_plane(fix_L, fix_R, ipd, check_results=False, plot_results=False):
     gaze directions, since theyre monocular) of the two eyes (fix_L and fix_R). All vectors are expected
     to be 3X1
 
-    The function optionally checks to make sure the resulting elevation angles are the same
+    The functional optionally checks to make sure the resulting elevation angles are the same
     for each eye, and generates at plot of the original and new gaze vectors.
     """
 
@@ -36,12 +56,10 @@ def fit_plane(fix_L, fix_R, ipd, check_results=False, plot_results=False):
     fix_L = fix_L - loc_L                       # translate fix_L into coordinate system with loc_L at origin
     fix_L = fix_L / np.linalg.norm(fix_L)       # make unit length
     fix_L = fix_L + loc_L                       # translate back in to cyclopean coordinates
-    print np.linalg.norm(fix_L)
 
     fix_R = fix_R - loc_R                       # translate fix_R into coordinate system with loc_R at origin
     fix_R = fix_R / np.linalg.norm(fix_R)       # make unit length
     fix_R = fix_R + loc_R                       # translate back in to cyclopean coordinates
-    print np.linalg.norm(fix_R)
 
     # SOLVE FOR PLANE THROUGH loc_L AND loc_R, WHILE MINIMIZING DISTANCE TO fix_L AND fix_R:
     # CONSTRAINED LEAST-SQUARES (solve: y = bz)
@@ -60,6 +78,7 @@ def fit_plane(fix_L, fix_R, ipd, check_results=False, plot_results=False):
     fix_R_new  = np.array([[fix_R[0,0], b*fix_R[2,0], fix_R[2,0]]]).T # project
 
 
+    # TODO Move check results to testing code
     if check_results:
 
         # check that elevation angles are the same
@@ -73,41 +92,40 @@ def fit_plane(fix_L, fix_R, ipd, check_results=False, plot_results=False):
         th_L_new = np.degrees(np.arcsin(np.dot( P, (fix_L_new) / np.linalg.norm(fix_L_new))))
         th_R_new = np.degrees(np.arcsin(np.dot( P, (fix_R_new) / np.linalg.norm(fix_R_new))))
 
-        print "Align Eyes Adjustment (L/R in deg)", th_L, th_R
+#         print "Align Eyes Adjustment (L/R in deg)", th_L, th_R
         if np.absolute(th_L_new) > 1e-10 or np.absolute(th_R_new) > 1e-10:
             raise ValueError("Projection to epipolar plane failed")
 
     if plot_results:
-
         #points for epipolar plane
-        [xramp,zramp]   = np.meshgrid( np.linspace(-1.5,1.5, 5), np.linspace(-1.5,1.5, 5) );
+        [xramp,zramp]   = np.meshgrid( np.linspace(-1.5,1.5, 5), np.linspace(-0.1,1.1, 5) );
         yramp           = zramp.copy()
         yramp           = b[0,0]*yramp
 
-        # Need Bill's help to get the plotting working in iPython Notebook
-        #%matplotlib inline
         fig = plt.figure()
-        axes = fig.add_axes([0.1, 0.1, 0.8, 0.8]) # left, bottom, width, height (range 0 to 1)
-        axes = fig.gca(projection='3d')
+        ax = plt.subplot(111,projection='3d')
 
-        # epipolar plane
-        axes.plot_wireframe( xramp, yramp, zramp);
+        # # epipolar plane
+        ax.plot_wireframe( xramp, zramp, yramp);
 
         #cyclopean eye and interocular axis
-        axes.plot( [0.], [0.], [0.],'ko')
-        axes.plot( [loc_R[0,0],loc_L[0,0]], [loc_R[1,0],loc_L[1,0]], [loc_R[2,0],loc_L[2,0]],'c')
+        ax.plot( [0.], [0.], [0.],'ko', zdir='y')
+        ax.plot( [loc_R[0,0],loc_L[0,0]], [loc_R[1,0],loc_L[1,0]], [loc_R[2,0],loc_L[2,0]],'c', zdir='y')
         # original gaze vectors
-        axes.plot( [loc_L[0,0],fix_L[0,0]], [loc_L[1.0],fix_L[1,0]], [loc_L[2,0],fix_L[2,0]],'k-o')
-        axes.plot( [loc_R[0,0],fix_R[0,0]], [loc_R[1,0],fix_R[1,0]], [loc_R[2,0],fix_R[2,0]],'k-o')
+        ax.plot( [loc_L[0,0],fix_L[0,0]], [loc_L[1.0],fix_L[1,0]], [loc_L[2,0],fix_L[2,0]],'k-o', zdir='y')
+        ax.plot( [loc_R[0,0],fix_R[0,0]], [loc_R[1,0],fix_R[1,0]], [loc_R[2,0],fix_R[2,0]],'k-o', zdir='y')
         # new gaze vectors
-        axes.plot( [loc_L[0,0],fix_L_new[0,0]], [loc_L[1,0],fix_L_new[1,0]], [loc_L[2,0],fix_L_new[2,0]],'g-o')
-        axes.plot( [loc_R[0,0],fix_R_new[0,0]], [loc_R[1,0],fix_R_new[1,0]], [loc_R[2,0],fix_R_new[2,0]],'r-o')
+        ax.plot( [loc_L[0,0],fix_L_new[0,0]], [loc_L[1,0],fix_L_new[1,0]], [loc_L[2,0],fix_L_new[2,0]],'g-o', zdir='y')
+        ax.plot( [loc_R[0,0],fix_R_new[0,0]], [loc_R[1,0],fix_R_new[1,0]], [loc_R[2,0],fix_R_new[2,0]],'r-o', zdir='y')
 
-        #box on; grid on; axis square; axis tight;
-        #xlabel( 'x' ); ylabel( 'y' ); zlabel( 'z' );
-        #hold off;
+        ax.set_xlabel('X')
+        ax.set_ylabel('Z')
+        ax.set_zlabel('Y')
 
+        ax.set_zlim3d(.1, -.1)  # Adjust the vertical limits
+        ax.set_ylim3d(-.1, 1.1)  # Adjust the depth limits
 
     return fix_L_new, fix_R_new
+
 
 
