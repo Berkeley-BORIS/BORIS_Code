@@ -2,41 +2,55 @@ import numpy as np
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 
-def align_eyes(fix_L, fix_R, loc_L, loc_R, check_results=0, plot_results=0):
+
+def align_eyes(gaze_df, ipd):
+
+    df = gaze_df.loc[:, (['left', 'right'], ['bref x, bref y, bref z'])].copy()
+    
+
+
+
+def fit_plane(fix_L, fix_R, ipd, check_results=False, plot_results=False):
     """
     The data from the Eyelink rarely results in gaze directions for the two eyes that actually
     intersection. The goal of this function is to take the skew gaze rays for a given time point
-    and force them lie in a common epipolar plane. To do this, we find the equation of a plane 
-    that contains the optical centers of the left and right eyes (loc_L and loc_R), 
-    and has the minimum least squares distance from the fixation points (or probably more accurately 
+    and force them lie in a common epipolar plane. To do this, we find the equation of a plane
+    that contains the optical centers of the left and right eyes (loc_L and loc_R),
+    and has the minimum least squares distance from the fixation points (or probably more accurately
     gaze directions, since theyre monocular) of the two eyes (fix_L and fix_R). All vectors are expected
     to be 3X1
 
-    The functional optionally checks to make sure the resulting elevation angles are the same
+    The function optionally checks to make sure the resulting elevation angles are the same
     for each eye, and generates at plot of the original and new gaze vectors.
     """
 
 
     # ADJUST fix_L AND fix_R to still lie along gaze direction, but each be unit
     # length from eye locations loc_L and p2
+    loc_L = np.array([[-ipd/2., 0, 0]]).T
+    loc_R = np.array([[ipd/2., 0, 0]]).T
+
+    assert fix_L.shape == (3,1)
+    assert fix_R.shape == (3,1)
 
     fix_L = fix_L - loc_L                       # translate fix_L into coordinate system with loc_L at origin
     fix_L = fix_L / np.linalg.norm(fix_L)       # make unit length
     fix_L = fix_L + loc_L                       # translate back in to cyclopean coordinates
+    print np.linalg.norm(fix_L)
 
     fix_R = fix_R - loc_R                       # translate fix_R into coordinate system with loc_R at origin
     fix_R = fix_R / np.linalg.norm(fix_R)       # make unit length
     fix_R = fix_R + loc_R                       # translate back in to cyclopean coordinates
+    print np.linalg.norm(fix_R)
 
-
-    # SOLVE FOR PLANE THROUGH loc_L AND loc_R, WHILE MINIMIZING DISTANCE TO fix_L AND fix_R: 
+    # SOLVE FOR PLANE THROUGH loc_L AND loc_R, WHILE MINIMIZING DISTANCE TO fix_L AND fix_R:
     # CONSTRAINED LEAST-SQUARES (solve: y = bz)
     # the only degree of freedom is the rotation of the plane around the x axis that runs between loc_L and loc_R
     # so we find the linear least squares solution for y = bz
     # http://en.wikipedia.org/wiki/Linear_least_squares_(mathematics)
 
-    y = np.matrix([[loc_L[1,0], fix_L[1,0], loc_R[1,0], fix_R[1,0]]]).T # y vector
-    Z = np.matrix([[loc_L[2,0], fix_L[2,0], loc_R[2,0], fix_R[2,0]]]).T # Z vector
+    y = np.matrix([[loc_L[1,0], fix_L[1,0], loc_R[1,0], fix_R[1,0]]]).T # y column vector
+    Z = np.matrix([[loc_L[2,0], fix_L[2,0], loc_R[2,0], fix_R[2,0]]]).T # Z column vector
 
     b = np.linalg.inv(Z.T * Z) * Z.T * y    # least squares solution for b
 
@@ -47,7 +61,7 @@ def align_eyes(fix_L, fix_R, loc_L, loc_R, check_results=0, plot_results=0):
 
 
     if check_results:
-        
+
         # check that elevation angles are the same
         P = np.array([0, -1, b])    # vector normal to the epipolar plane
         P = P / np.linalg.norm(P)               # normalize
@@ -55,12 +69,12 @@ def align_eyes(fix_L, fix_R, loc_L, loc_R, check_results=0, plot_results=0):
         # angle between original vectors and epipolar plane
         th_L = np.degrees(np.arcsin(np.dot( P, fix_L / np.linalg.norm(fix_L))))
         th_R = np.degrees(np.arcsin(np.dot( P, fix_R / np.linalg.norm(fix_R ))))
-        
+
         th_L_new = np.degrees(np.arcsin(np.dot( P, (fix_L_new) / np.linalg.norm(fix_L_new))))
         th_R_new = np.degrees(np.arcsin(np.dot( P, (fix_R_new) / np.linalg.norm(fix_R_new))))
 
         print "Align Eyes Adjustment (L/R in deg)", th_L, th_R
-        if np.absolute(th_L_new) > 1e-100 or np.absolute(th_R_new) > 1e-100: # NOTE e-100?! I think we can allow for a little more floating point errors than that!
+        if np.absolute(th_L_new) > 1e-10 or np.absolute(th_R_new) > 1e-10:
             raise ValueError("Projection to epipolar plane failed")
 
     if plot_results:
@@ -95,4 +109,5 @@ def align_eyes(fix_L, fix_R, loc_L, loc_R, check_results=0, plot_results=0):
 
 
     return fix_L_new, fix_R_new
+
 

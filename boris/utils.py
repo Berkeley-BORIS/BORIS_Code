@@ -44,20 +44,31 @@ def calc_fixation_pts(task_df, rt_df, ipd):
             _convert_href_to_ndsref(df, eye=eye, center=href_center)
         _ndsref_to_fixation(df, ipd)
 
+def convert_href_to_bref(df, rt_df):
+
+    CM_PER_HREF_UNIT = calibration_dist / HREF_DIST
+
+    center = _find_href_center(rt_df)
+
+    for eye in ['left', 'right']:
+        df[eye, 'bref x'] = (df[eye, 'href x'] - center[eye, 'href x']) * CM_PER_HREF_UNIT
+        df[eye, 'bref y'] = (df[eye, 'href y'] - center[eye, 'href y']) * CM_PER_HREF_UNIT
+        df[eye, 'bref z'] = calibration_dist
+
+    df.sortlevel(axis=1, inplace=True)
 
 def _find_href_center(rt_df):
 
     central_target = (rt_df['target', 'direction'] == 0) & \
                      (rt_df['target', 'eccentricity'] == 0) & \
-                     (rt_df['target', 'distance'] == calibration_dist) & \
-                     (rt_df['target', 'rep'] == 1)
+                     (rt_df['target', 'distance'] == calibration_dist)
 
     good_data = rt_df['both', 'quality'] == 'GOOD'
 
     central_data = rt_df[[('left', 'href x'), ('left', 'href y'),
                           ('right', 'href x'), ('right', 'href y')]][central_target & good_data]
 
-    return central.mean()
+    return central_data.loc[1].median()
 
 
 def _convert_href_to_ndsref(df, eye, center):

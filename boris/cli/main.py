@@ -94,11 +94,27 @@ def config(root, set):
 def original_eye_anlaysis(subject_id, session_id, task_id):
 
     subject = BORISSubject(subject_id)
-    session_gaze_data = pd.HDFStore(subject.session_gaze_data_fpath(session_id),
-                                    mode='r')
-    dm = DataManager(root=root_data_dpath)
-    session_gaze_data = dm.gaze_data(subj_id, session_id)
+    session_dm = DataManager(root=root_data_dpath)
+    task_dm = DataManager(root=task_data_dpath)
+
+    session_gaze_data = session_dm.get_gaze_data(subj_id, session_id)
+    rt_data = session_dm.get_rt_data(subj_id, session_id)
     task_gaze_data = extract_task(session_gaze_data, task_data_dpath)
+    convert_href_to_bref(task_gaze_data, rt_data.copy())
+    align_eyes(task_gaze_data, subject.ipd)
+
+    convert_href_to_bref(rt_data, rt_data.copy())
+    align_eyes(rt_data, subject.ipd)
+
+    print("Saving dataframes to {}".format(task_dm.gaze_data_fpath(subject_id, task_id)))
+    if not exists(task_dm.gaze_data_dpath(subject_id, task_id)):
+        makedirs(task_dm.gaze_data_dpath(subject_id, task_id))
+
+    with pd.HDFStore(task_dm.get_gaze_data_fpath(subject_id, task_id), 'w') as store:
+        store['task'] = task_gaze_data
+        store['rt'] = rt_data
+
+
     # load subject metadata
     # do fit-plane
     # do vergence correction

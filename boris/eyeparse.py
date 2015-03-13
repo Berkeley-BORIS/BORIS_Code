@@ -212,8 +212,8 @@ class EyeDataFrameCreator(object):
         full_df.rename(columns={0:'time', 'level_0':'rep'}, inplace=True)
         full_df = full_df.set_index(['rep', 'time'])
         full_df.columns = columns
-        full_df.sortlevel(axis=1)
-        full_df.sortlevel(axis=0)
+        full_df.sortlevel(axis=1, inplace=True)
+        full_df.sortlevel(axis=0, inplace=True)
 
         return full_df
 
