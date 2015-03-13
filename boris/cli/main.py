@@ -94,8 +94,8 @@ def config(root, set):
 def original_eye_anlaysis(subject_id, session_id, task_id):
 
     subject = BORISSubject(subject_id)
-    session_dm = DataManager(root=root_data_dpath)  # TODO create DataManager class
-    task_dm = DataManager(root=task_data_dpath)
+    session_dm = ProcessedDataManager()
+    task_dm = DataManager(root=nds_data_dpath)
 
     session_gaze_data = session_dm.get_gaze_data(subj_id, session_id)
     rt_data = session_dm.get_rt_data(subj_id, session_id)
