@@ -35,15 +35,6 @@ def calc_target_locations(df, ipd):
     df['target', 'horizontal version'] = versions[0]
     df['target', 'vertical version'] = versions[1]
 
-
-def calc_fixation_pts(task_df, rt_df, ipd):
-
-    href_center = _find_href_center(rt_df)
-    for df in [task_df, rt_df]:
-        for eye in ['left', 'right']:
-            _convert_href_to_ndsref(df, eye=eye, center=href_center)
-        _ndsref_to_fixation(df, ipd)
-
 def convert_href_to_bref(df, rt_df):
 
     CM_PER_HREF_UNIT = calibration_dist / HREF_DIST
@@ -70,36 +61,77 @@ def _find_href_center(rt_df):
 
     return central_data.loc[1].median()
 
+# def calc_fixation_pts(task_df, rt_df, ipd):
 
-def _convert_href_to_ndsref(df, eye, center):
+#     href_center = _find_href_center(rt_df)
+#     for df in [task_df, rt_df]:
+#         for eye in ['left', 'right']:
+#             _convert_href_to_ndsref(df, eye=eye, center=href_center)
+#         _ndsref_to_fixation(df, ipd)
 
-    CM_PER_HREF_UNIT = calibration_dist / HREF_DIST
-    # recenter href coordinates and convert to cm to get ndsref for each eye
-    # in the world coordinate system
-    df[eye, 'ndsref x'] = (df[eye, 'href x'] - center[eye, 'href x']) * CM_PER_HREF_UNIT
-    df[eye, 'ndsref y'] = (df[eye, 'href y'] - center[eye, 'href y']) * CM_PER_HREF_UNIT
+# def _convert_href_to_ndsref(df, eye, center):
 
-    # flip y-axis so up is positive
-    df[eye, 'ndsref y'] *= -1
+#     CM_PER_HREF_UNIT = calibration_dist / HREF_DIST
+#     # recenter href coordinates and convert to cm to get ndsref for each eye
+#     # in the world coordinate system
+#     df[eye, 'ndsref x'] = (df[eye, 'href x'] - center[eye, 'href x']) * CM_PER_HREF_UNIT
+#     df[eye, 'ndsref y'] = (df[eye, 'href y'] - center[eye, 'href y']) * CM_PER_HREF_UNIT
 
-    df[eye, 'ndsref z'] = calibration_dist
+#     # flip y-axis so up is positive
+#     df[eye, 'ndsref y'] *= -1
 
-
-def _ndsref_to_fixation(df, ipd):
-
-    ndsref = df[[('left', 'ndsref x'), ('left', 'ndsref y'), ('left', 'ndsref z'),
-                 ('right', 'ndsref x'), ('right', 'ndsref y'), ('right', 'ndsref z')]]
-
-    eyeref_le = ndsref['left'] - np.array([-ipd/2.0, 0, 0])
-    eyeref_re = ndsref['right'] - np.array([ipd/2.0, 0, 0])
-
-    # TODO fit eyerefs vectors to plane and project them
-    _fit_to_plane()
-
-    assert 0
+#     df[eye, 'ndsref z'] = calibration_dist
 
 
-def calc_vergence(fixation_pt, ipd):
+# def _ndsref_to_fixation(df, ipd):
+
+#     ndsref = df[[('left', 'ndsref x'), ('left', 'ndsref y'), ('left', 'ndsref z'),
+#                  ('right', 'ndsref x'), ('right', 'ndsref y'), ('right', 'ndsref z')]]
+
+#     eyeref_le = ndsref['left'] - np.array([-ipd/2.0, 0, 0])
+#     eyeref_re = ndsref['right'] - np.array([ipd/2.0, 0, 0])
+
+#     # TODO fit eyerefs vectors to plane and project them
+#     _fit_to_plane()
+
+#     assert 0
+
+def calc_fixation_pts(df, ipd):
+
+    gaze_data = task_df.loc[:,(['left', 'right'], ['bref x', 'bref y', 'bref z'])]
+
+    L = np.array([-ipd/2., 0, 0])
+    R = np.array([ipd/2., 0, 0])
+
+    left_data = gaze_data['left'].values - L
+    right_data = gaze_data['right'].values - R
+
+    s = (np.sqrt(np.sum(np.cross(R-L, right_data)**2, axis=1))) / \
+        (np.sqrt(np.sum(np.cross(left_data, right_data)**2, axis=1)))
+
+    fixation_pt = np.expand_dims(s, axis=1)*left_data
+
+    cols = ['fixation x', 'fixation y', 'fixation z']
+    fix_df = pd.DataFrame(fixation_pt, index=df.index, columns=cols)
+
+    for col in cols:
+        df['both', col] = fix_df[col]
+
+    df.sortlevel(axis=1, inplace=True)
+
+
+def calc_vergenece(df, ipd):
+
+    fixation_pt = df.loc[:,('both', ['fixation x', 'fixation y', 'fixation z'])].values
+
+    vergence = _calc_vergence(fixation_pt, ipd)
+    vergence = pd.Series(vergence, index=df.index)
+    df['both', 'vergence'] = vergence
+
+    df.sortlevel(axis=1, inplace=True)
+
+
+def _calc_vergence(fixation_pt, ipd):
 
     fixation_pt = np.atleast_2d(fixation_pt)
     assert fixation_pt.shape[1] == 3
@@ -114,7 +146,23 @@ def calc_vergence(fixation_pt, ipd):
     return vergence
 
 
-def calc_version(fixation_pt):
+def calc_version(df):
+
+    fixation_pt = df.loc[:,('both', ['fixation x', 'fixation y', 'fixation z'])].values
+
+    horz_version, vert_version = _calc_version(fixation_pt)
+
+    cols = ['horizontal version', 'vertical version']
+
+    version_df = pd.DataFrame(np.c_[horz_version, vert_version], index=df.index, columns=cols)
+
+    for col in cols:
+        df['both', col] = version_df[col]
+
+    df.sortlevel(axis=1, inplace=True)
+
+
+def _calc_version(fixation_pt):
 
     fixation_pt = np.atleast_2d(fixation_pt)
     assert fixation_pt.shape[1] == 3
