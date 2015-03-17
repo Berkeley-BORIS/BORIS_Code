@@ -97,9 +97,14 @@ def original_eye_anlaysis(subject_id, session_id, task_id):
     session_dm = ProcessedDataManager()
     task_dm = DataManager(root=nds_data_dpath)
 
-    session_gaze_data = session_dm.get_gaze_data(subj_id, session_id)
-    rt_data = session_dm.get_rt_data(subj_id, session_id)
-    task_gaze_data = extract_task(session_gaze_data, task_data_dpath)
+    with pd.HDFStore(session_dm.get_gaze_data_fpath(subject_id, session_id),
+                     mode='r') as store:
+        session_gaze_data = store['task']
+        rt_data = store['rt']
+
+    task_gaze_data = extract_task(session_gaze_data,
+                        dm.get_scene_data_dpath(subject_id, task_id))
+
     convert_href_to_bref(task_gaze_data, rt_data.copy())
     align_eyes(task_gaze_data, subject.ipd)
     calc_fixation_pts(task_gaze_data, subject.ipd)  # TODO update to just calc fixation

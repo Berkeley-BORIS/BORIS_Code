@@ -33,11 +33,6 @@ class DataManager(object):
     def gaze_dname(self):
         return self._gaze_dname
 
-    def get_gaze_data(self, subject_id, xid):
-
-        with pd.HDFStore(self.get_gaze_data_fpath(subject_id, xid), mode='r') as store:
-            return store['task']
-
     def get_gaze_data_dpath(self, subject_id):
 
         return join(self.root, self.gaze_dname)

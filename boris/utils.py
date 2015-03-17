@@ -5,6 +5,9 @@ calculating version, vergence, torsion, and the 3D fixation point.
 
 from __future__ import absolute_import, division, print_function, unicode_literals
 
+from glob import glob
+import os.path.split
+
 import numpy as np
 
 from .physical import calibration_dist, HREF_DIST
@@ -35,6 +38,30 @@ def calc_target_locations(df, ipd):
     df['target', 'horizontal version'] = versions[0]
     df['target', 'vertical version'] = versions[1]
 
+def extract_task(df, frames_dpath):
+
+    frame_fpaths = glob(frames_dpath)
+    frame_nums = map(pluck_frame, frame_fpaths)
+
+    new_df = df.iloc(frame_nums).copy()
+
+    frame_nums = pd.Series(frame_nums, index=new_df.index, name='frame_num')
+
+    new_df = pd.concat([new_df, frame_nums], axis=1)
+
+    return new_df
+
+
+def pluck_frame(fpath):
+    
+    head, tail = os.path.split(fpath)
+    
+    regexp = re.compile(r"cam1_frame_(?P<frame_num>[\d]+)\.bmp")
+    
+    fname_match = regexp.search(fpath)
+    frame_num = int(fname_match.group('frame_num'))
+    
+    return frame_num
 
 def calc_fixation_pts(task_df, rt_df, ipd):
 
