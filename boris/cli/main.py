@@ -107,9 +107,9 @@ def original_eye_anlaysis(subject_id, session_id, task_id):
 
     convert_href_to_bref(task_gaze_data, rt_data.copy())
     align_eyes(task_gaze_data, subject.ipd)
-    calc_fixation_pts(task_gaze_data, subject.ipd)  # TODO update to just calc fixation
-    calc_version(task_gaze_data)  # TODO update to handle dataframes
-    calc_vergence(task_gaze_data, subject.ipd)  # TODO update to handle dataframes
+    calc_fixation_pts(task_gaze_data, subject.ipd)
+    calc_version(task_gaze_data)
+    calc_vergence(task_gaze_data, subject.ipd)
 
     convert_href_to_bref(rt_data, rt_data.copy())
     align_eyes(rt_data, subject.ipd)
