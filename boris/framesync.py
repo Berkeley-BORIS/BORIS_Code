@@ -11,6 +11,7 @@ def sync_frames(data_df, frames):
     *Grab the timestamp and capture number of the frame
     *Find indices of time points within 30ms window (+/- 15ms) of frame capture
     *Grab GOOD fixation thats closest to shutter open
+    *Use nearest fixation if the window is BAD
     *Assign frame to that gaze position
 
     For tkidrdp1 (tki_inside) and bwsure1 (kre_outside2) the last two radial targets lost their
@@ -39,8 +40,10 @@ def sync_frames(data_df, frames):
         # We only want to assign frames to GOOD eyemovements.
         good_data = data_of_interest[data_of_interest['both', 'quality'] == 'GOOD']
 
-        # If we have any eyemovements within 15ms of the frame
-        if not data_of_interest.empty:
+        # If we don't have any eyemovements within this window, move on to the next
+        if data_of_interest.empty:
+            continue
+        else:  # If we have any eyemovements within 15ms of the frame
             # Add their time diffs to the data df so we can spot check.
             indices_of_interest = data_of_interest.index
             data_df.loc[indices_of_interest, ('both', 'frame_time_diff')] = time_diffs
@@ -52,6 +55,10 @@ def sync_frames(data_df, frames):
             # Find the eyemovement closest to the frame and assign the frame to
             # that eyemovement.
             smallest_time_diff_loc = np.abs(time_diffs.loc[indices_of_interest]).argmin()
+            data_df.loc[smallest_time_diff_loc, ('both', 'frame_time')] = frame['time']
+            data_df.loc[smallest_time_diff_loc, ('both', 'frame_count')] = frame['press num']
+        else:  # If none are GOOD just use the smallest time diff
+            smallest_time_diff_loc = np.abs(time_diffs.loc[data_of_interest.index]).argmin()
             data_df.loc[smallest_time_diff_loc, ('both', 'frame_time')] = frame['time']
             data_df.loc[smallest_time_diff_loc, ('both', 'frame_count')] = frame['press num']
 

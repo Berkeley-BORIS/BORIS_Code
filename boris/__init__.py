@@ -6,3 +6,5 @@ from .eyeparse import *
 from .utils import *
 from .framesync import *
 from .subject import *
+from .datamanager import *
+from .aligneyes import *
