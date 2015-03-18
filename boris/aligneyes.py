@@ -1,8 +1,11 @@
 import numpy as np
 import pandas as pd
-import matplotlib.pyplot as plt
-from mpl_toolkits.mplot3d import Axes3D
 
+try:
+    import matplotlib.pyplot as plt
+    from mpl_toolkits.mplot3d import Axes3D
+except ImportError as e:
+    pass
 
 def align_eyes(gaze_df, ipd):
 
