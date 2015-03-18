@@ -21,17 +21,17 @@ def main():
 
 @main.command()
 @click.argument('subject_id')
-@click.argument('task_id')
-def parse(subject_id, task_id):
+@click.argument('session_id')
+def parse(subject_id, session_id):
     """
     Parse an ascii eyelink file into a file with gaze info
     """
 
     subject = BORISSubject(subject_id)
 
-    eye_data_parser = EyeDataParser(subject.raw_ascii_fpath(task_id))
-    print("Parsing {subject_id} {task_id} using file {fpath}...".format(
-        subject_id=subject_id, task_id=task_id, fpath=subject.raw_ascii_fpath(task_id)))
+    eye_data_parser = EyeDataParser(subject.raw_ascii_fpath(session_id))
+    print("Parsing {subject_id} {session_id} using file {fpath}...".format(
+        subject_id=subject_id, session_id=session_id, fpath=subject.raw_ascii_fpath(session_id)))
     eye_data_parser.parse_data()
     print("Done!\n")
 
@@ -43,10 +43,10 @@ def parse(subject_id, task_id):
     calc_target_locations(eye_dfs.radial_target_df, subject.ipd)
     print("Done!\n")
 
-    if subject.needs_framesync(task_id):
+    if subject.needs_framesync(session_id):
         print("Subject {0} lost button presses during {1} task. "
-              "Adding the missing frames...".format(subject.subject_id, task_id))
-        eye_dfs.frame_df = fix_missing_frames(eye_dfs.frame_df, subject.framesync_fpath(task_id))
+              "Adding the missing frames...".format(subject.subject_id, session_id))
+        eye_dfs.frame_df = fix_missing_frames(eye_dfs.frame_df, subject.framesync_fpath(session_id))
         print("Frames added.\n")
 
     print("Syncing radial target frames...")
@@ -55,11 +55,11 @@ def parse(subject_id, task_id):
     sync_frames(eye_dfs.task_df, eye_dfs.frame_df)
     print("Done!\n")
 
-    print("Saving data frames to {}".format(subject.gaze_data_fpath(task_id)))
+    print("Saving data frames to {}".format(subject.gaze_data_fpath(session_id)))
     if not exists(subject.processed_gaze_dpath):
         makedirs(subject.processed_gaze_dpath)
 
-    with pd.HDFStore(subject.gaze_data_fpath(task_id), 'w') as store:
+    with pd.HDFStore(subject.gaze_data_fpath(session_id), 'w') as store:
         store['task'] = eye_dfs.task_df
         store['rt'] = eye_dfs.radial_target_df
         store['frames'] = eye_dfs.frame_df

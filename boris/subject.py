@@ -43,40 +43,40 @@ class BORISSubject(object):
 
         return self._eyeinfo['pupil_size']
 
-    def raw_ascii_fpath(self, task_id):
+    def raw_ascii_fpath(self, session_id):
         """Returns the file path to the raw ascii data for the task specified
-        by task_id."""
+        by session_id."""
 
-        asc_fname = "{subject_id}_{task_id}.asc".format(subject_id=self.subject_id,
-                                                        task_id=task_id)
+        asc_fname = "{subject_id}_{session_id}.asc".format(subject_id=self.subject_id,
+                                                        session_id=session_id)
         return join(self.raw_gaze_dpath, asc_fname)
 
-    def needs_framesync(self, task_id):
+    def needs_framesync(self, session_id):
         """Returns whether the subject needs manual framesyncing for the task
-        specified by task_id."""
+        specified by session_id."""
 
-        framesync_fname = "{subject_id}_{task_id}.framesync".format(
-                            subject_id=self.subject_id, task_id=task_id)
+        framesync_fname = "{subject_id}_{session_id}.framesync".format(
+                            subject_id=self.subject_id, session_id=session_id)
 
         if exists(join(self.raw_gaze_dpath, framesync_fname)):
             return True
         else:
             return False
 
-    def framesync_fpath(self, task_id):
+    def framesync_fpath(self, session_id):
         """Returns the file path the framesync file."""
 
-        framesync_fname = "{subject_id}_{task_id}.framesync".format(
-                            subject_id=self.subject_id, task_id=task_id)
+        framesync_fname = "{subject_id}_{session_id}.framesync".format(
+                            subject_id=self.subject_id, session_id=session_id)
 
         return join(self.raw_gaze_dpath, framesync_fname)
 
-    def gaze_data_fpath(self, task_id):
+    def gaze_data_fpath(self, session_id):
         """Returns the file path to the gaze data file for this subject and task.
         """
 
-        task_fname = "{subject_id}_{task_id}.h5".format(
-                      subject_id=self.subject_id, task_id=task_id)
+        task_fname = "{subject_id}_{session_id}.h5".format(
+                      subject_id=self.subject_id, session_id=session_id)
 
         return join(self.processed_gaze_dpath, task_fname)
 
