@@ -95,9 +95,12 @@ def config(root, set):
 @click.argument('task_id')
 def original_eye_anlaysis(subject_id, session_id, task_id):
 
+    # instantiating BORIS subject class
     subject = BORISSubject(subject_id)
+    # manage paths to session level (non project-specific data)
     session_dm = ProcessedDataManager()
-    task_dm = DataManager(root=nds_root_dpath, scene_data_root=nds_task_root)
+    # manage paths to project-specific data home
+    nds_dm = DataManager(root=nds_root_dpath, scene_data_root=nds_task_root)
 
     with pd.HDFStore(session_dm.get_gaze_data_fpath(subject_id, session_id),
                      mode='r') as store:
@@ -106,7 +109,7 @@ def original_eye_anlaysis(subject_id, session_id, task_id):
 
     print("Extracting task...")
     task_gaze_data = extract_task(session_gaze_data,
-                        task_dm.get_scene_data_dpath(subject_id, task_id))
+                        nds_dm.get_scene_data_dpath(subject_id, task_id))
 
     print("Calculating task gaze positions...")
     convert_href_to_bref(task_gaze_data, rt_data.copy())
@@ -122,11 +125,11 @@ def original_eye_anlaysis(subject_id, session_id, task_id):
     calc_version(rt_data)
     calc_vergence(rt_data, subject.ipd)
 
-    print("Saving dataframes to {}".format(task_dm.get_gaze_data_fpath(subject_id, task_id)))
-    if not exists(task_dm.get_gaze_data_dpath(subject_id)):
-        makedirs(task_dm.get_gaze_data_dpath(subject_id))
+    print("Saving dataframes to {}".format(nds_dm.get_gaze_data_fpath(subject_id, task_id)))
+    if not exists(nds_dm.get_gaze_data_dpath(subject_id)):
+        makedirs(nds_dm.get_gaze_data_dpath(subject_id))
 
-    with pd.HDFStore(task_dm.get_gaze_data_fpath(subject_id, task_id), 'w') as store:
+    with pd.HDFStore(nds_dm.get_gaze_data_fpath(subject_id, task_id), 'w') as store:
         store['task'] = task_gaze_data
         store['rt'] = rt_data
 
