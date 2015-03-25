@@ -6,11 +6,9 @@ import cv
 import cv2
 import numpy as np
 
-print cv2.__version__
-if not cv2.__version__.startswith('2.3'):
-	raise NotImplementedError("WARNING: cv2 is version {0}!! We haven't implemented the inverted transform direction changed after 2.3!".format(cv2.__version__))
-
-print asdf
+#print cv2.__version__
+#if not cv2.__version__.startswith('2.3'):
+#	raise NotImplementedError("WARNING: cv2 is version {0}!! We haven't implemented the inverted transform direction changed after 2.3!".format(cv2.__version__))
 
 def stereo_calibration(check_img_folder,nimages,display=False,dims=(4,11),size=(640,480)):
 	'''reads files from a directory of stereo images of opencv circle grid. calibrates intrinsics of each camera, then extrinsics of stereo rig
@@ -32,7 +30,10 @@ def stereo_calibration(check_img_folder,nimages,display=False,dims=(4,11),size=(
 	nimg = 0 #number of images with found corners
 	iptsF1 = [] #image point arrays to fill up
 	iptsF2 = []
-	random_images = random.sample(range(500), nimages)
+	#random_images = random.sample(range(500), nimages)
+
+	random_images = range(10)
+
 	#for n in range(0,nimages,2):
 	for n in random_images:
 		filename1 = check_img_folder + 'cam1_frame_'+str(n+1)+'.bmp'

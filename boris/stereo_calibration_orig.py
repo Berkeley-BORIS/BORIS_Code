@@ -6,9 +6,9 @@ import cv
 import cv2
 import numpy as np
 
-print cv2.__version__
-if not cv2.__version__.startswith('2.3'):
-	raise NotImplementedError("WARNING: cv2 is version {0}!! We haven't implemented the inverted transform direction changed after 2.3!".format(cv2.__version__))
+#print cv2.__version__
+#if not cv2.__version__.startswith('2.3'):
+#	raise NotImplementedError("WARNING: cv2 is version {0}!! We haven't implemented the inverted transform direction changed after 2.3!".format(cv2.__version__))
 
 print asdf
 
