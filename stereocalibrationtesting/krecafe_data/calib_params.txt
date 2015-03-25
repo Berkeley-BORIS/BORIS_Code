@@ -1,0 +1,5 @@
+
+ num stereo frames: 84
+ rms cam1: 0.221549910685
+ rms cam2: 0.195913008229
+ rms stereo: 0.165935466551

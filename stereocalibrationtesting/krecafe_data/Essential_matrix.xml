@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<opencv_storage>
+<Essential_matrix type_id="opencv-matrix">
+  <rows>3</rows>
+  <cols>3</cols>
+  <dt>d</dt>
+  <data>
+    3.5536428561517247e-05 2.8531047224105790e-02
+    -1.6689416337291596e-03 9.5660836549885699e-03
+    4.0698671622802062e-03 6.5188887550041628e+00
+    -8.6727055917143418e-03 -6.5188277699814137e+00
+    4.0753292170700901e-03</data></Essential_matrix>
+</opencv_storage>
