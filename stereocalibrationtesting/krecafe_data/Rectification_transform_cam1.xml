@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<opencv_storage>
+<Rectification_transform_cam1 type_id="opencv-matrix">
+  <rows>3</rows>
+  <cols>3</cols>
+  <dt>d</dt>
+  <data>
+    9.9999803831982792e-01 -1.3313230215889402e-03
+    -1.4666068008113654e-03 1.3308648324209602e-03
+    9.9999906530607330e-01 -3.1334609885432391e-04
+    1.4670225948580262e-03 3.1139362875529743e-04 9.9999887543872479e-01</data></Rectification_transform_cam1>
+</opencv_storage>
