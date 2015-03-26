@@ -30,9 +30,7 @@ def stereo_calibration(check_img_folder,nimages,display=False,dims=(4,11),size=(
 	nimg = 0 #number of images with found corners
 	iptsF1 = [] #image point arrays to fill up
 	iptsF2 = []
-	#random_images = random.sample(range(500), nimages)
-
-	random_images = range(10)
+	random_images = random.sample(range(500), nimages)
 
 	#for n in range(0,nimages,2):
 	for n in random_images:
