@@ -55,6 +55,10 @@ def parse(subject_id, session_id):
     sync_frames(eye_dfs.task_df, eye_dfs.frame_df)
     print("Done!\n")
 
+    print("Calculating pupil sizes...")
+    calc_metric_pupil_size(subject.pupil_size, eye_dfs.task_df)
+    print("Done!\n")
+
     print("Saving data frames to {}".format(subject.gaze_data_fpath(session_id)))
     if not exists(subject.processed_gaze_dpath):
         makedirs(subject.processed_gaze_dpath)

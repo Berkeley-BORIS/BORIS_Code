@@ -276,3 +276,38 @@ def get_R(theta, phi):
     R = R_phi*R_theta
 
     return R.A
+
+def calc_metric_pupil_size(reference_diameter, session_df):
+    """
+    Calculate the pupil sizes from frames 100-200 of the main session task. These
+    frames correspond to times when the subject is no longer staring at the
+    display, but is experiencing lighting conditions similar to when their pupil
+    size was measurements metrically.
+    """
+
+    for eye in ['left', 'right']:
+        # select only synced frames and those for which pupil area is valid
+        mask = ((~np.isnan(session_df['both', 'frame_time'])) &
+                (session_df[eye, 'pupil area']))
+        masked_df = session_df[mask].copy()
+        pupil_areas = masked_df[eye, 'pupil area'].iloc[101:201]
+        pupil_areas = pupil_areas.reset_index()
+
+        pupil_median = pupil_areas[eye, 'pupil area'].median()
+        pupil_mean = pupil_areas[eye, 'pupil area'].mean()
+        pupil_std = pupil_areas[eye, 'pupil area'].std()
+
+        avging_time = pupil_areas['time'].iloc[-1] - pupil_areas['time'].iloc[0]
+
+        print("{eye} eye time: {time} seconds".format(eye=eye, time=avging_time/1000.0))
+        print("{eye} eye median: {median}".format(eye=eye, median=pupil_median))
+        print("{eye} eye mean: {mean}".format(eye=eye, mean=pupil_mean))
+        print("{eye} eye std: {std}".format(eye=eye, std=pupil_std))
+
+        conversion_factor = reference_diameter / np.sqrt(pupil_median / np.pi)
+
+        session_df[eye, 'pupil size'] = conversion_factor * \
+                                        np.sqrt(session_df[eye, 'pupil area'] / np.pi)
+
+    session_df.sortlevel(axis=1, inplace=True)
+
