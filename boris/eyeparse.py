@@ -86,7 +86,7 @@ class EyeDataParser(object):
             data_quality = 'BAD'
 
         time = int(data[0])
-        eye_data = [np.nan if i=='.' else float(i) for i in data[1:-1]]
+        eye_data = [np.nan if i=='.' else float(i) for i in data[1:7]]
 
         full_data = [time] + eye_data + [self._current_eye_flags['L'], self._current_eye_flags['R']] + [data_quality]
         RT_data = [self._RT_dist, self._RT_direction, self._RT_eccentricity]#, self._RT_rep]
