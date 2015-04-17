@@ -62,6 +62,8 @@ def sync_frames(data_df, frames):
             data_df.loc[smallest_time_diff_loc, ('both', 'frame_time')] = frame['time']
             data_df.loc[smallest_time_diff_loc, ('both', 'frame_count')] = frame['press num']
 
+    data_df.sortlevel(axis=1, inplace=True)
+
 
 def fix_missing_frames(frame_df, framesync_fpath):
     """
