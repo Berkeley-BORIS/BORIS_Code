@@ -41,7 +41,7 @@ class BORISSubject(object):
     @property
     def pupil_size(self):
 
-        return self._eyeinfo['pupil_size']
+        return self._eyeinfo['pupil']
 
     def raw_ascii_fpath(self, session_id):
         """Returns the file path to the raw ascii data for the task specified
