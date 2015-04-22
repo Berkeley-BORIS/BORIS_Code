@@ -11,10 +11,6 @@ class EyeDataParser(object):
 
         self.data_fpath = data_fpath
 
-        # TODO Think about recording subject and experiment id here
-        # self.subject_id = 'XYZ'
-        # self.exp_id = 'NAT'
-
         # Make dictionaries to hold our data with repitions as keys
         self._task_data = {}
         self._radial_target_data = {}
@@ -39,6 +35,8 @@ class EyeDataParser(object):
         self._RT_eccentricity = None
         self._RT_direction = None
 
+        self._in_preamble = True
+
     @property
     def task_data(self):
         return self._task_data
@@ -51,6 +49,10 @@ class EyeDataParser(object):
     def frames(self):
         return self._frame_data
 
+    @property
+    def in_preamble(self):
+        return self._in_preamble
+
     def parse_data(self):
 
         with open(self.data_fpath) as f:
@@ -59,6 +61,12 @@ class EyeDataParser(object):
                 if not splitted_line:
                     continue
                 line_type = splitted_line[0]
+
+                if line_type == "START":
+                    self._in_preamble = False
+
+                if self.in_preamble:
+                    continue
 
                 # if line_type can convert to int, it's a DATA line
                 try:
