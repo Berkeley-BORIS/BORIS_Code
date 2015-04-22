@@ -2,6 +2,7 @@ from __future__ import absolute_import, print_function, division
 
 from os.path import abspath, expanduser, exists
 from os import makedirs
+import subprocess
 
 import click
 
@@ -136,4 +137,16 @@ def original_eye_anlaysis(subject_id, session_id, task_id):
     with pd.HDFStore(nds_dm.get_gaze_data_fpath(subject_id, task_id), 'w') as store:
         store['task'] = task_gaze_data
         store['rt'] = rt_data
+
+
+@main.command()
+def parse_all():
+    """Parse all subjects and all sessions"""
+
+    for subject_id in ['kre', 'sah', 'tki']:
+        for session_id in ['cafe', 'inside', 'nearwork', 'outside1', 'outside2']:
+            cmd = "boris parse {subject_id} {session_id}".format(subject_id=subject_id,
+                                                                 session_id=session_id)
+            subprocess.call(cmd, shell=True)
+
 
