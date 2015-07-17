@@ -82,6 +82,7 @@ def convert_href_to_bref(df, rt_df):
         df[eye, 'bref z'] = calibration_dist
 
     df.sortlevel(axis=1, inplace=True)
+    df.sortlevel(axis=0, inplace=True)
 
 
 def _find_href_center(rt_df):
@@ -154,6 +155,7 @@ def calc_fixation_pts(df, ipd):
         df['both', col] = fix_df[col]
 
     df.sortlevel(axis=1, inplace=True)
+    df.sortlevel(axis=0, inplace=True)
 
 
 def calc_vergence(df, ipd):
@@ -165,6 +167,7 @@ def calc_vergence(df, ipd):
     df['both', 'vergence'] = vergence
 
     df.sortlevel(axis=1, inplace=True)
+    df.sortlevel(axis=0, inplace=True)
 
 
 def _calc_vergence(fixation_pt, ipd):
@@ -196,6 +199,7 @@ def calc_version(df):
         df['both', col] = version_df[col]
 
     df.sortlevel(axis=1, inplace=True)
+    df.sortlevel(axis=0, inplace=True)
 
 
 def _calc_version(fixation_pt):
@@ -310,4 +314,5 @@ def calc_metric_pupil_size(reference_diameter, session_df):
                                         np.sqrt(session_df[eye, 'pupil area'] / np.pi)
 
     session_df.sortlevel(axis=1, inplace=True)
+    session_df.sortlevel(axis=0, inplace=True)
 

@@ -98,7 +98,7 @@ def config(root, set):
 @click.argument('subject_id')
 @click.argument('session_id')
 @click.argument('task_id')
-def original_eye_anlaysis(subject_id, session_id, task_id):
+def original_eye_analysis(subject_id, session_id, task_id):
 
     # instantiating BORIS subject class
     subject = BORISSubject(subject_id)
