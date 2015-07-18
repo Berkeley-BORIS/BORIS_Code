@@ -7,6 +7,8 @@ try:
 except ImportError as e:
     pass
 
+from .physical import calibration_dist
+
 def align_eyes(gaze_df, ipd):
 
     df = gaze_df.loc[:, (['left', 'right'], ['bref x', 'bref y', 'bref z'])].copy()
@@ -80,6 +82,14 @@ def fit_plane(fix_L, fix_R, ipd, check_results=False, plot_results=False):
     # PROJECT VECTORS ONTO PLANE to get new point coordinates
     fix_L_new  = np.array([[fix_L[0,0], b*fix_L[2,0], fix_L[2,0]]]).T # project (x and z are the same, y = bz)
     fix_R_new  = np.array([[fix_R[0,0], b*fix_R[2,0], fix_R[2,0]]]).T # project
+
+    fix_L_new = fix_L_new - loc_L
+    fix_L_new = fix_L_new * calibration_dist / fix_L_new[2,0]
+    fix_L_new = fix_L_new + loc_L
+
+    fix_R_new = fix_R_new - loc_R
+    fix_R_new = fix_R_new * calibration_dist / fix_R_new[2,0]
+    fix_R_new = fix_R_new + loc_R
 
 
     # TODO Move check results to testing code

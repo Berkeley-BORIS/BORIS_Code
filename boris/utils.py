@@ -146,7 +146,7 @@ def calc_fixation_pts(df, ipd):
     s = (np.sqrt(np.sum(np.cross(R-L, right_data)**2, axis=1))) / \
         (np.sqrt(np.sum(np.cross(left_data, right_data)**2, axis=1)))
 
-    fixation_pt = np.expand_dims(s, axis=1)*left_data
+    fixation_pt = L + np.expand_dims(s, axis=1)*left_data
 
     cols = ['fixation x', 'fixation y', 'fixation z']
     fix_df = pd.DataFrame(fixation_pt, index=df.index, columns=cols)
