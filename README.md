@@ -28,6 +28,8 @@ Adding other raw data not on github:
 setting up Python environment:
 ===================
 
+If you're using OSX, the code will work with a custom python environment
+
 Download Anaconda Python distribution:
 https://store.continuum.io/cshop/anaconda/
 
