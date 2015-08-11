@@ -15,11 +15,12 @@ Adding repositories:
 
 (1) Clone the code repository (this one)
 	https://github.com/Berkeley-BORIS/BORIS_Code
-(2) Clone the gaze data repository into ../session_data/raw/gaze
-	https://github.com/Berkeley-BORIS/BORIS_Cam2EyeRegData/TBD
-(3) Clone the camera to eye registration resposity into ../session_data/raw/cam2eye_registration
-	https://github.com/Berkeley-BORIS/BORIS_Cam2EyeRegData
 
+(2) Clone the camera to eye registration resposity into ../session_data/raw/cam2eye_registration
+	https://github.com/Berkeley-BORIS/BORIS_Cam2EyeRegData
+	
+(3) Clone the gaze data repository into ../session_data/raw/gaze
+	https://github.com/Berkeley-BORIS/BORIS_Cam2EyeRegData/TBD
 
 Adding other raw datasets:
 
