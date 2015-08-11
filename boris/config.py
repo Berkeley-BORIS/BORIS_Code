@@ -3,9 +3,7 @@ Configuration loader for BORIS.
 """
 
 from __future__ import absolute_import, print_function, division, unicode_literals
-
 from os.path import join, expanduser, isfile
-
 import yaml
 
 rc_path = join(expanduser("~"), ".borisrc")

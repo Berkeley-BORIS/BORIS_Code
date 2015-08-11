@@ -1,12 +1,14 @@
 from __future__ import absolute_import, print_function, division
 
 from os.path import abspath, expanduser, exists
-from os import makedirs
+from os import makedirs,listdir
 import subprocess
+from fnmatch import fnmatch
 
 import click
 
 from ..eyeparse import *
+from ..stereocalibration import *
 from ..utils import *
 from ..framesync import *
 from ..subject import *
@@ -149,4 +151,29 @@ def parse_all():
                                                                  session_id=session_id)
             subprocess.call(cmd, shell=True)
 
+
+@main.command()
+@click.argument('subject_id')
+@click.argument('session_id')
+def stereocalibrate(subject_id, session_id):
+
+    """
+    Estimate intrinsics and extrinsics of stereo camera rig
+    """
+    
+    subject = BORISSubject(subject_id)
+
+    # grab calibration frames directory
+    for dir in listdir(subject.stereocalibration_session_dpath(session_id)):
+        if fnmatch(dir,'calibration_frames*'):
+            check_img_folder = join(subject.stereocalibration_session_dpath(session_id),dir)
+            break
+
+    print("Stereo-Calibrating {subject_id} {session_id} using file {fpath}...".format(
+        subject_id=subject_id, session_id=session_id, fpath=check_img_folder))
+    
+
+    stereo_calibrator = StereoCalibrator(check_img_folder)
+    stereo_calibrator.calibrate()
+    print("Done!\n")
 

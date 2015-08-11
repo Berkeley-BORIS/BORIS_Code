@@ -34,6 +34,10 @@ class BORISSubject(object):
         return join(config.processed_gaze_dpath, self.subject_id)
 
     @property
+    def stereocalibration_dpath(self):
+        return join(config.stereocalibration_dpath, self.subject_id)
+
+    @property
     def ipd(self):
 
         return self._eyeinfo['ipd']
@@ -50,6 +54,14 @@ class BORISSubject(object):
         asc_fname = "{subject_id}_{session_id}.asc".format(subject_id=self.subject_id,
                                                         session_id=session_id)
         return join(self.raw_gaze_dpath, asc_fname)
+
+    def stereocalibration_session_dpath(self, session_id):
+        """Returns the file path to the raw ascii data for the task specified
+        by session_id."""
+
+        session_dname = "{subject_id}_{session_id}".format(subject_id=self.subject_id,
+                                                        session_id=session_id)
+        return join(self.stereocalibration_dpath, session_dname)
 
     def needs_framesync(self, session_id):
         """Returns whether the subject needs manual framesyncing for the task
