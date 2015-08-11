@@ -11,12 +11,14 @@ https://store.continuum.io/cshop/anaconda/
 
 LINKING UP DATA:
 
-Adding other repositories:
+Adding repositories:
 
-(1) Clone the gaze data repository into ../data/raw/gaze
-	https://github.com/eacooper/BerkeleyVisionStatsGazeData
-(2) Clone the camera to eye registration resposity into ../data/raw/cam2eye_registration
-	https://github.com/eacooper/BerkeleyVisionStatsCam2EyeReg
+(1) Clone the code repository (this one)
+	https://github.com/Berkeley-BORIS/BORIS_Code
+(2) Clone the gaze data repository into ../session_data/raw/gaze
+	https://github.com/Berkeley-BORIS/BORIS_Cam2EyeRegData/TBD
+(3) Clone the camera to eye registration resposity into ../session_data/raw/cam2eye_registration
+	https://github.com/Berkeley-BORIS/BORIS_Cam2EyeRegData
 
 
 Adding other raw datasets:
