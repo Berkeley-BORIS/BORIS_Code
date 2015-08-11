@@ -25,6 +25,15 @@ Adding other raw data not on github:
 
 (3) **SCENE IMAGES**: place stereo camera images in ../session_data/raw/scene
 
+notes on structure:
+===================
+
+subj: a participant in the study
+
+session: a single recording session
+
+task: a subset of time within a session during which a particular task was performed
+
 setting up Python environment:
 ===================
 
@@ -46,7 +55,14 @@ source activate boris
 
 conda install -c https://conda.binstar.org/menpo opencv
 
-**set up command line interface**
+**add boris conda command line tool**
+
+conda install -c https://conda.binstar.org/bwsprague boris
+
+running standard analyses:
+===================
+
+**run set up for analysis**
 
 python setup.py install
 
