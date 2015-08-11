@@ -165,7 +165,7 @@ def stereocalibrate(subject_id, session_id):
 
     # grab calibration frames directory
     for dir in listdir(subject.stereocalibration_session_dpath(session_id)):
-        if fnmatch(dir,'calibration_frames*'):
+        if fnmatch.fnmatch(dir,'calibration_frames*'):
             check_img_folder = join(subject.stereocalibration_session_dpath(session_id),dir)
             break
 
