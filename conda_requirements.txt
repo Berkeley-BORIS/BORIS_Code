@@ -3,4 +3,3 @@ pandas>=0.15
 click>=3.0
 pyyaml>=3.0
 pytables>=3.0
-opencv>=2.4.9
