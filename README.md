@@ -59,6 +59,11 @@ conda install -c https://conda.binstar.org/menpo opencv
 
 conda install -c https://conda.binstar.org/bwsprague boris
 
+**set up environment for commance line interface**
+
+boris config --root /Volumes/BORIS_data/BORIS
+[...or whatever the path is to your session_data folder]
+
 running standard analyses:
 ===================
 
