@@ -14,16 +14,16 @@ Adding repositories from Github:
 (1) **CODE**: Clone this repository (this one)
 	https://github.com/Berkeley-BORIS/BORIS_Code
 
-(2) **CAMERA TO EYE REGISTRAION**: Clone this respository into ../session_data/raw/cam2eye_registration
+(2) **CAMERA TO EYE REGISTRAION**: Clone this respository into session_data/raw/cam2eye_registration
 	https://github.com/Berkeley-BORIS/BORIS_Cam2EyeRegData
 	
 Adding other raw data not on github:
 
-(1) **STEREO CALIBRATION**: place stereo calibration data (~5GB) directory in ../session_data/raw/stereocalibration/
+(1) **STEREO CALIBRATION**: place stereo calibration data (~5GB) directory in session_data/raw/stereocalibration/
 
-(2) **GAZE**: place eyelink ASC (SUBJ_RECORDING.asc) into ../session_data/raw/gaze/
+(2) **GAZE**: place eyelink ASC (SUBJ_RECORDING.asc) into session_data/raw/gaze/
 
-(3) **SCENE IMAGES**: place stereo camera images in ../session_data/raw/scene
+(3) **SCENE IMAGES**: place stereo camera images in session_data/raw/scene
 
 notes on structure:
 ===================
@@ -61,7 +61,7 @@ conda install -c https://conda.binstar.org/bwsprague boris
 
 **set up environment for commance line interface**
 
-boris config --root /Volumes/BORIS_data/BORIS
+boris config --root /users/emily/BORIS/session_data
 [...or whatever the path is to your session_data folder]
 
 running standard analyses:
