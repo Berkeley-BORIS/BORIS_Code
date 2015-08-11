@@ -87,5 +87,9 @@ boris parse *subj* *session*
 
 boris parse kre cafe
 
+or
+
+boris parse_all
+
 
 
