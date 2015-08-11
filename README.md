@@ -28,11 +28,15 @@ Adding other raw data not on github:
 notes on structure:
 ===================
 
-subj: a participant in the study
+**subj**: a participant in the study
 
-session: a single recording session
+kre, sah, tki
 
-task: a subset of time within a session during which a particular task was performed
+**session**: a single recording session
+
+cafe, inside, nearwork, outside1, outside2
+
+**task**: a subset of time within a session during which a particular task was performed
 
 setting up Python environment:
 ===================
@@ -67,16 +71,21 @@ boris config --root /users/emily/BORIS/session_data
 
 (this creates a .borisrc file in your home directory)
 
-running standard analyses:
+DATA ANALYSIS
 ===================
 
-**run set up for analysis**
+**run set up for analysis (from code folder)**
 
 python setup.py install
 
-DATA ANALYSIS:
+running standard analyses:
+===================
 
-from code folder: 
+**parsing the Eyelink files**
+
+boris parse *subj* *session*
+
+boris parse kre cafe
 
 
 
