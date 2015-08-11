@@ -30,15 +30,29 @@ setting up Python environment:
 
 If you're using OSX, the code will work with a custom python environment
 
-Download Anaconda Python distribution:
+**Download Anaconda Python distribution:**
+
 https://store.continuum.io/cshop/anaconda/
 
-conda install boris
-**check for updates somehow?**
+**Set up boris python environment:**
+
+conda create -n boris --file=conda_requirements.txt: do from BORIS code directory to create boris anaconda environment
+
+**activate it**
+
+source activate boris
+
+**add open cv**
+
+conda install -c https://conda.binstar.org/menpo opencv
+
+**set up command line interface**
+
+python setup.py install
 
 DATA ANALYSIS:
 
-from code folder: python setup.py install
+from code folder: 
 
 
 
