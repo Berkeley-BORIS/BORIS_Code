@@ -47,14 +47,6 @@ If you're using OSX, the code will work with a custom python environment
 
 https://store.continuum.io/cshop/anaconda/
 
-**Set up boris python environment:**
-
-conda create -n boris --file=conda_requirements.txt: do from BORIS code directory to create boris anaconda environment
-
-**activate it**
-
-source activate boris
-
 **add open cv**
 
 conda install -c https://conda.binstar.org/menpo opencv
@@ -63,7 +55,15 @@ conda install -c https://conda.binstar.org/menpo opencv
 
 conda install -c https://conda.binstar.org/bwsprague boris
 
-**set up environment for commance line interface**
+**Set up boris python environment:**
+
+conda create -n boris --file=conda_requirements.txt: do from BORIS code directory to create boris anaconda environment
+
+**activate it**
+
+source activate boris
+
+**set up environment for command line interface**
 
 boris config --root *path/to/session_data*
 
