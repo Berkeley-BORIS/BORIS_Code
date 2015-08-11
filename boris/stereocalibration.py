@@ -79,8 +79,8 @@ class StereoCalibrator(object):
                 if found1 and found2:
 
                     # copy the found points into the ipts matrices
-                    iptsF1.append(np.reshape(points1,(num_pts,2)))
-                    iptsF2.append(np.reshape(points2,(num_pts,2)))
+                    iptsF1.append(np.reshape(points1,(self._num_pts,2)))
+                    iptsF2.append(np.reshape(points2,(self._num_pts,2)))
 
                     #save images with points identified 
                     self.save_image_with_grid_drawn(n,img1,points1,found1)
@@ -88,7 +88,7 @@ class StereoCalibrator(object):
 
                     nimg = nimg + 1 #increment image counter
                     # check if you've reached the target number of images, otherwise continue
-                    if nimg == nimages:
+                    if nimg == self._nimages:
                         break
                     
                 
@@ -159,7 +159,7 @@ class StereoCalibrator(object):
         img = cv2.imread(filename,0)
 
         # find center points in circle grid
-        [found,points] = cv2.findCirclesGridDefault(img,self._dims,flags=(cv2.CALIB_CB_ASYMMETRIC_GRID))
+        [found,points] = cv2.findCirclesGrid(img,self._dims,flags=(cv2.CALIB_CB_ASYMMETRIC_GRID))
 
         return img,found,points
 
@@ -169,8 +169,9 @@ class StereoCalibrator(object):
         '''
                     
         drawn_boards = img.copy()
+        fname        = "cam1_frame_{fnum}.bmp".format(fnum=str(n+1))
         cv2.drawChessboardCorners(drawn_boards, self._dims, points, found)
-        cv2.imwrite(join(self.data_fpath,'images_used',{'cam1_frame_',str(n+1),'.bmp'}, drawn_boards))
+        cv2.imwrite(join(self.data_fpath,'images_used',fname),drawn_boards)
 
 
     # def objectpoints(self,dims,num_images,square_size):
