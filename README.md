@@ -61,8 +61,11 @@ conda install -c https://conda.binstar.org/bwsprague boris
 
 **set up environment for commance line interface**
 
+boris config --root *path/to/session_data*
+
 boris config --root /users/emily/BORIS/session_data
-[...or whatever the path is to your session_data folder]
+
+(this creates a .borisrc file in your home directory)
 
 running standard analyses:
 ===================
