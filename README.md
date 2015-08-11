@@ -11,21 +11,20 @@ https://store.continuum.io/cshop/anaconda/
 
 LINKING UP DATA:
 
-Adding repositories:
+Adding repositories from Github:
 
-(1) Clone the code repository (this one)
+(1) CODE: Clone this repository (this one)
 	https://github.com/Berkeley-BORIS/BORIS_Code
 
-(2) Clone the camera to eye registration resposity into ../session_data/raw/cam2eye_registration
+(2) CAMERA TO EYE REGISTRAION: Clone this respository into ../session_data/raw/cam2eye_registration
 	https://github.com/Berkeley-BORIS/BORIS_Cam2EyeRegData
 	
-(3) Clone the gaze data repository into ../session_data/raw/gaze
-	https://github.com/Berkeley-BORIS/BORIS_Cam2EyeRegData/TBD
+Adding other raw data not on github:
 
-Adding other raw datasets:
+(1) STEREO CALIBRATION: place stereo calibration data (~5GB) directory in ../session_data/raw/stereocalibration/
 
-(1) place stereo calibration data directory in ../data/raw/stereocalibration/SUBJ/
-(2) place eyelink ASC (SUBJ_RECORDING.asc) into ../data/raw/gaze/SUBJ/
+(2) GAZE: place eyelink ASC (SUBJ_RECORDING.asc) into ../data/raw/gaze/SUBJ/
+
 (3) place stereo camera images in ../data/raw/scene/SUBJ/RECORDING
 (4) in eyes/ipds create a text file called XXX.txt (subject's 3 initials) and enter ipd in cm
 
