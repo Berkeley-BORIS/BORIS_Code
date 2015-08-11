@@ -3,13 +3,11 @@ BORIS ( BinOcular Retinal Image Statistics ) Code
 
 code for analyzing the Berkeley dataset of visual movies
 
-GETTING SET UP:
+GETTING SET UP
+===================
 
-Download Anaconda Python distribution:
-https://store.continuum.io/cshop/anaconda/
-
-
-LINKING UP DATA:
+linking up data:
+===================
 
 Adding repositories from Github:
 
@@ -23,10 +21,15 @@ Adding other raw data not on github:
 
 (1) STEREO CALIBRATION: place stereo calibration data (~5GB) directory in ../session_data/raw/stereocalibration/
 
-(2) GAZE: place eyelink ASC (SUBJ_RECORDING.asc) into ../data/raw/gaze/SUBJ/
+(2) GAZE: place eyelink ASC (SUBJ_RECORDING.asc) into ../session_data/raw/gaze/
 
-(3) place stereo camera images in ../data/raw/scene/SUBJ/RECORDING
-(4) in eyes/ipds create a text file called XXX.txt (subject's 3 initials) and enter ipd in cm
+(3) SCENE CAMERAS: place stereo camera images in ../session_data/raw/scene
+
+setting up Python e nvironment:
+===================
+
+Download Anaconda Python distribution:
+https://store.continuum.io/cshop/anaconda/
 
 HOW TO INSTALL BORIS CONDA COMMANDLINE TOOL:
 
