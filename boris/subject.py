@@ -63,6 +63,14 @@ class BORISSubject(object):
                                                         session_id=session_id)
         return join(self.stereocalibration_dpath, session_dname)
 
+    def stereocalibration_processed_dpath(self, session_id):
+        """Returns the file path to the raw ascii data for the task specified
+        by session_id."""
+
+        session_dname = "{subject_id}_{session_id}".format(subject_id=self.subject_id,
+                                                        session_id=session_id)
+        return join(config.processed_stereocalibration_dpath, self.subject_id, session_dname)
+
     def needs_framesync(self, session_id):
         """Returns whether the subject needs manual framesyncing for the task
         specified by session_id."""

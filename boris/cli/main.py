@@ -173,7 +173,14 @@ def stereocalibrate(subject_id, session_id):
         subject_id=subject_id, session_id=session_id, fpath=check_img_folder))
     
 
-    stereo_calibrator = StereoCalibrator(check_img_folder)
+    stereo_calibrator = StereoCalibrator(check_img_folder,subject.stereocalibration_processed_dpath(session_id))
     stereo_calibrator.calibrate()
+
+    #save parameter estimates
+    print("\nSaving all parameters to the folder with checkerboard images...")
+    stereo_calibrator.store_calib_params()
+    #store_calib_params(check_img_folder,nimg,cam1rms,cam2rms,stereorms,intrinsics1,intrinsics2,distortion1,distortion2,P1,P2,E,F,R,T,Q,R1,R2,map1x,map1y,map2x,map2y)
+
+
     print("Done!\n")
 
