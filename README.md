@@ -63,6 +63,10 @@ conda create -n boris --file=conda_requirements.txt: do from BORIS code director
 
 source activate boris
 
+**if you want to use ipython notebook, add this too**
+
+conda install ipython ipython-notebook ipython-qtconsole:
+
 **set up environment for command line interface**
 
 boris config --root *path/to/session_data*
