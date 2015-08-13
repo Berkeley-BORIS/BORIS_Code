@@ -22,7 +22,7 @@ class StereoCalibrator(object):
 
         self.data_fpath = data_fpath    # path to directory with images
         self.processed_data_fpath = processed_data_fpath    # path to directory to save results
-        self._nimages   = 100       # number of images to load
+        self._nimages   = 150       # number of images to load
         self._display   = False
         self._dims      = (4,11)    # number of circle row, columns
         self._size      = (640,480) # image size
@@ -122,7 +122,6 @@ class StereoCalibrator(object):
 
         print "\n rms pixel error:\ncam1 orig: " + str(self.cam1rms),"\ncam2 orig: " + str(self.cam2rms)
 
-        import ipdb; ipdb.set_trace()
         ### PERFORM STEREO CALIBRATION ###
 
         # Estimate extrinsic parameters from stereo point correspondences
@@ -252,7 +251,7 @@ class StereoCalibrator(object):
         '''write calibration parameters to text and XML files
         '''
 
-        calib_params = open(join(self.processed_data_fpath,'calib_params.txt'), 'w')
+        calib_params = open(join(self.processed_data_fpath,'Calibration_quality.txt'), 'w')
         calib_params.write("\n num stereo frames: " + str(self.nimages_actual))
         calib_params.write("\n rms cam1: " + str(self.cam1rms))
         calib_params.write("\n rms cam2: " + str(self.cam2rms))

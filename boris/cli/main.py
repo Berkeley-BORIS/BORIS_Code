@@ -4,7 +4,6 @@ from os.path import abspath, expanduser, exists
 from os import makedirs,listdir
 import subprocess
 from fnmatch import fnmatch
-
 import click
 
 from ..eyeparse import *
@@ -72,6 +71,16 @@ def parse(subject_id, session_id):
         store['frames'] = eye_dfs.frame_df
 
     print("Parsing complete.\n")
+
+@main.command()
+def parse_all():
+    """Parse all subjects and all sessions"""
+
+    for subject_id in ['kre', 'sah', 'tki']:
+        for session_id in ['cafe', 'inside', 'nearwork', 'outside1', 'outside2']:
+            cmd = "boris parse {subject_id} {session_id}".format(subject_id=subject_id,
+                                                                 session_id=session_id)
+            subprocess.call(cmd, shell=True)
 
 
 @main.command()
@@ -141,15 +150,6 @@ def original_eye_analysis(subject_id, session_id, task_id):
         store['rt'] = rt_data
 
 
-@main.command()
-def parse_all():
-    """Parse all subjects and all sessions"""
-
-    for subject_id in ['kre', 'sah', 'tki']:
-        for session_id in ['cafe', 'inside', 'nearwork', 'outside1', 'outside2']:
-            cmd = "boris parse {subject_id} {session_id}".format(subject_id=subject_id,
-                                                                 session_id=session_id)
-            subprocess.call(cmd, shell=True)
 
 
 @main.command()
@@ -179,8 +179,16 @@ def stereocalibrate(subject_id, session_id):
     #save parameter estimates
     print("\nSaving all parameters to the folder with checkerboard images...")
     stereo_calibrator.store_calib_params()
-    #store_calib_params(check_img_folder,nimg,cam1rms,cam2rms,stereorms,intrinsics1,intrinsics2,distortion1,distortion2,P1,P2,E,F,R,T,Q,R1,R2,map1x,map1y,map2x,map2y)
-
 
     print("Done!\n")
+
+@main.command()
+def stereocalibrate_all():
+    """Stereocalibrate all subjects and all sessions"""
+
+    for subject_id in ['kre', 'sah', 'tki']:
+        for session_id in ['cafe', 'inside', 'nearwork', 'outside1', 'outside2']:
+            cmd = "boris stereocalibrate {subject_id} {session_id}".format(subject_id=subject_id,
+                                                                 session_id=session_id)
+            subprocess.call(cmd, shell=True)
 
