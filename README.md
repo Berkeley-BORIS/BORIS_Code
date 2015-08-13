@@ -47,9 +47,9 @@ If you're using OSX, the code will work with a custom python environment
 
 https://store.continuum.io/cshop/anaconda/
 
-**add open cv**
+**add open cv -- currently using 2.4.10, not compatible with 3.0**
 
-conda install -c https://conda.binstar.org/menpo opencv
+conda install -c https://conda.binstar.org/jjhelmus opencv
 
 **add boris conda command line tool**
 
