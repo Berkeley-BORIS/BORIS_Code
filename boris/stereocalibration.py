@@ -1,4 +1,3 @@
-import sys
 import os
 from os.path import join
 import random
@@ -9,7 +8,7 @@ import numpy as np
 if cv2.__version__.startswith('2.3'):
     raise NotImplementedError("WARNING: cv2 is version {0}, Z axis is inverted in this version and still result in incorrect results".format(cv2.__version__))
 
-## NOTES: I removed the error for 2.4 and replaced it with an error for 2.3, 
+## NOTE: I removed the error for 2.4 and replaced it with an error for 2.3, 
 ## since I think we should update everything to work in the current coordinate system (Z positive?)
 ## Currently results are printed to terminal and savd to txt files, need to updat this
 ## for however we want to do it in BORIS
@@ -60,8 +59,8 @@ class StereoCalibrator(object):
         nimg    = 0     # number of images with found corners
         iptsF1  = []    # image point arrays to fill up
         iptsF2  = []
-        image_inds = range(1,500,5) + range(2,500,5) + range(3,500,5) + range(4,500,5) + range(5,500,5) #order in which to grab images
-
+        #image_inds = range(1,500,5) + range(2,500,5) + range(3,500,5) + range(4,500,5) + range(5,500,5) #order in which to grab images
+        image_inds = random.sample(range(500),self._nimages)
         # for each image number
         for n in image_inds:
 
