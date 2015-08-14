@@ -82,7 +82,7 @@ DATA ANALYSIS
 
 python setup.py install
 
-running standard analyses:
+running standard session-level pre-processing:
 ===================
 
 **parsing the Eyelink files**
@@ -95,5 +95,14 @@ or
 
 boris parse_all
 
+**calibrating stereo cameras**
+
+boris stereocalibrate *subj* *session*
+
+boris stereocalibrate kre cafe
+
+or
+
+boris stereocalibrate_all
 
 
