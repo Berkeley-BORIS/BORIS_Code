@@ -3,9 +3,7 @@ Configuration loader for BORIS.
 """
 
 from __future__ import absolute_import, print_function, division, unicode_literals
-
 from os.path import join, expanduser, isfile
-
 import yaml
 
 rc_path = join(expanduser("~"), ".borisrc")
@@ -58,6 +56,9 @@ else:
 
     processed_gaze_dpath = rc.pop('processed_dpath',
         join(root_data_dpath, processed_dname, gaze_dname))
+
+    processed_stereocalibration_dpath = rc.pop('processed_dpath',
+        join(root_data_dpath, processed_dname, stereocalibration_dname))
 
     processed_scene_dpath = rc.pop('processed_scene_dpath',
         join(root_data_dpath, processed_dname, scene_dname))

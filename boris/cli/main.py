@@ -1,12 +1,13 @@
 from __future__ import absolute_import, print_function, division
 
 from os.path import abspath, expanduser, exists
-from os import makedirs
+from os import makedirs,listdir
 import subprocess
-
+from fnmatch import fnmatch
 import click
 
 from ..eyeparse import *
+from ..stereocalibration import *
 from ..utils import *
 from ..framesync import *
 from ..subject import *
@@ -70,6 +71,16 @@ def parse(subject_id, session_id):
         store['frames'] = eye_dfs.frame_df
 
     print("Parsing complete.\n")
+
+@main.command()
+def parse_all():
+    """Parse all subjects and all sessions"""
+
+    for subject_id in ['kre', 'sah', 'tki']:
+        for session_id in ['cafe', 'inside', 'nearwork', 'outside1', 'outside2']:
+            cmd = "boris parse {subject_id} {session_id}".format(subject_id=subject_id,
+                                                                 session_id=session_id)
+            subprocess.call(cmd, shell=True)
 
 
 @main.command()
@@ -139,14 +150,45 @@ def original_eye_analysis(subject_id, session_id, task_id):
         store['rt'] = rt_data
 
 
+
+
 @main.command()
-def parse_all():
-    """Parse all subjects and all sessions"""
+@click.argument('subject_id')
+@click.argument('session_id')
+def stereocalibrate(subject_id, session_id):
+
+    """
+    Estimate intrinsics and extrinsics of stereo camera rig
+    """
+    
+    subject = BORISSubject(subject_id)
+
+    # grab calibration frames directory
+    for dir in listdir(subject.stereocalibration_session_dpath(session_id)):
+        if fnmatch.fnmatch(dir,'calibration_frames*'):
+            check_img_folder = join(subject.stereocalibration_session_dpath(session_id),dir)
+            break
+
+    print("Stereo-Calibrating {subject_id} {session_id} using file {fpath}...".format(
+        subject_id=subject_id, session_id=session_id, fpath=check_img_folder))
+    
+
+    stereo_calibrator = StereoCalibrator(check_img_folder,subject.stereocalibration_processed_dpath(session_id))
+    stereo_calibrator.calibrate()
+
+    #save parameter estimates
+    print("\nSaving all parameters to the folder with checkerboard images...")
+    stereo_calibrator.store_calib_params()
+
+    print("Done!\n")
+
+@main.command()
+def stereocalibrate_all():
+    """Stereocalibrate all subjects and all sessions"""
 
     for subject_id in ['kre', 'sah', 'tki']:
         for session_id in ['cafe', 'inside', 'nearwork', 'outside1', 'outside2']:
-            cmd = "boris parse {subject_id} {session_id}".format(subject_id=subject_id,
+            cmd = "boris stereocalibrate {subject_id} {session_id}".format(subject_id=subject_id,
                                                                  session_id=session_id)
             subprocess.call(cmd, shell=True)
-
 
