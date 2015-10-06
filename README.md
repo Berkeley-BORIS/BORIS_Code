@@ -82,6 +82,9 @@ DATA ANALYSIS
 
 python setup.py install
 
+if using python or ipython notebook rather than CLI, do:
+import boris
+
 running standard session-level pre-processing:
 ===================
 
@@ -108,6 +111,4 @@ boris stereocalibrate_all
 **registering camera to eyes - estimates the translation/rotation between the cameras and eyes**
 
 
-**ipyhton notebook notes**
 
-import boris
