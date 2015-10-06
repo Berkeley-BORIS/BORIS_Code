@@ -8,6 +8,7 @@ import click
 
 from ..eyeparse import *
 from ..stereocalibration import *
+from ..cam2eye_registration import *
 from ..utils import *
 from ..framesync import *
 from ..subject import *
@@ -20,6 +21,27 @@ def main():
     #click.echo("Tesing the main function!")
     pass
 
+@main.command()
+@click.option('--root')
+@click.option('--set', nargs=2)
+def config(root, set):
+
+    if root:
+        rc['root_data_dpath']=abspath(expanduser(root))
+
+    if set:
+        rc[set[0]] = abspath(expanduser(set[1]))
+
+    if root or set:
+        write_boris_rc(rc, rc_path)
+    else:
+        print(rc)
+
+# @main.command()
+# def info():
+
+#     template = /
+# """o
 
 @main.command()
 @click.argument('subject_id')
@@ -82,28 +104,6 @@ def parse_all():
                                                                  session_id=session_id)
             subprocess.call(cmd, shell=True)
 
-
-@main.command()
-@click.option('--root')
-@click.option('--set', nargs=2)
-def config(root, set):
-
-    if root:
-        rc['root_data_dpath']=abspath(expanduser(root))
-
-    if set:
-        rc[set[0]] = abspath(expanduser(set[1]))
-
-    if root or set:
-        write_boris_rc(rc, rc_path)
-    else:
-        print(rc)
-
-# @main.command()
-# def info():
-
-#     template = /
-# """o
 
 @main.command()
 @click.argument('subject_id')
@@ -191,4 +191,33 @@ def stereocalibrate_all():
             cmd = "boris stereocalibrate {subject_id} {session_id}".format(subject_id=subject_id,
                                                                  session_id=session_id)
             subprocess.call(cmd, shell=True)
+
+
+@main.command()
+@click.argument('subject_id')
+@click.argument('session_id')
+def cam2eye_register(subject_id, session_id):
+
+    """
+    Estimate the rotation and translation between the eyes and cameras
+    """
+    
+    subject = BORISSubject(subject_id)
+
+    for trial in range(1,2):
+
+        # grab circle grid image directories
+        distances = ['50', '100', '450']
+        board_directories = []
+        for distance in distances:
+            directory_path = join(subject.cam2eye_registration_session_dpath(session_id), "_".join(["circles", distance, str(trial)]))
+            board_directories.append(directory_path)
+
+
+    print("Registering cameras and eyes for {subject_id} {session_id} for trial number {tnum} using files in {dpath}...".format(
+        subject_id=subject_id, session_id=session_id, tnum=str(trial), dpath=subject.cam2eye_registration_session_dpath(session_id)))
+
+    cam2eye_register = CamEyeRegister(board_directories,subject.cam2eye_regisration_processed_dpath(session_id))
+    cam2eye_register.register()
+
 

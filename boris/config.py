@@ -43,6 +43,7 @@ else:
     registration_dname = rc.pop('registration_dname', _DEFAULT_REGISTRATION_DNAME)
     scene_dname = rc.pop('scene_dname', _DEFAULT_SCENE_DNAME)
     stereocalibration_dname = rc.pop('stereocalibration_dname', _DEFAULT_STEREOCALIB_DNAME)
+    cam2eye_registration_dname = rc.pop('scam2eye_registration_dname', _DEFAULT_REGISTRATION_DNAME)
 
     raw_gaze_dpath = rc.pop('raw_gaze_dpath', join(root_data_dpath, raw_dname, gaze_dname))
     registration_dpath = rc.pop('registration_dpath',
@@ -51,6 +52,8 @@ else:
         join(root_data_dpath, raw_dname, scene_dname))
     stereocalibration_dpath = rc.pop('stereocalibration_dpath',
         join(root_data_dpath, raw_dname, stereocalibration_dname))
+    cam2eye_registration_dpath = rc.pop('cam2eye_registration_dpath',
+        join(root_data_dpath, raw_dname, cam2eye_registration_dname))
 
     processed_dname = rc.pop('processed_dname', _DEFAULT_PROCESSED_DNAME)
 
