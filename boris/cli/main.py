@@ -177,7 +177,7 @@ def stereocalibrate(subject_id, session_id):
     stereo_calibrator.calibrate()
 
     #save parameter estimates
-    print("\nSaving all parameters to the folder with checkerboard images...")
+    print("\nSaving all parameters and image to {rpath}...".format(rpath=subject.stereocalibration_processed_dpath(session_id)))
     stereo_calibrator.store_calib_params()
 
     print("Done!\n")
@@ -217,7 +217,13 @@ def cam2eye_register(subject_id, session_id):
     print("Registering cameras and eyes for {subject_id} {session_id} for trial number {tnum} using files in {dpath}...".format(
         subject_id=subject_id, session_id=session_id, tnum=str(trial), dpath=subject.cam2eye_registration_session_dpath(session_id)))
 
-    cam2eye_register = CamEyeRegister(board_directories,subject.cam2eye_regisration_processed_dpath(session_id))
+    cam2eye_register = CamEyeRegister(board_directories,subject.cam2eye_registration_processed_dpath(session_id),subject.stereocalibration_processed_dpath(session_id))
     cam2eye_register.register()
+
+    #save parameter estimates
+    print("\nSaving all parameters and images to {rpath}...".format(rpath=subject.cam2eye_registration_processed_dpath(session_id)))
+    cam2eye_register.store_params()
+
+    print("Done!\n")
 
 

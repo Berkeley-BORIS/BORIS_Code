@@ -8,3 +8,5 @@ from .framesync import *
 from .subject import *
 from .datamanager import *
 from .aligneyes import *
+from .stereocalibration import *
+from .cam2eye_registration import *

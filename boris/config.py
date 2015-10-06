@@ -63,6 +63,9 @@ else:
     processed_stereocalibration_dpath = rc.pop('processed_dpath',
         join(root_data_dpath, processed_dname, stereocalibration_dname))
 
+    processed_cam2eye_registration_dpath = rc.pop('processed_dpath',
+        join(root_data_dpath, processed_dname, cam2eye_registration_dname))
+
     processed_scene_dpath = rc.pop('processed_scene_dpath',
         join(root_data_dpath, processed_dname, scene_dname))
 
