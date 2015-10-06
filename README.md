@@ -85,7 +85,7 @@ python setup.py install
 running standard session-level pre-processing:
 ===================
 
-**parsing the Eyelink files**
+**parsing the Eyelink files - gets gaze information from Eyelink file format**
 
 boris parse *subj* *session*
 
@@ -95,7 +95,7 @@ or
 
 boris parse_all
 
-**calibrating stereo cameras**
+**calibrating stereo cameras - estimates intrinsics/extrinsics of the stereo cameras**
 
 boris stereocalibrate *subj* *session*
 
@@ -104,5 +104,7 @@ boris stereocalibrate kre cafe
 or
 
 boris stereocalibrate_all
+
+**registering camera to eyes - estimates the translation/rotation between the cameras and eyes**
 
 
