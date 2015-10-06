@@ -108,3 +108,6 @@ boris stereocalibrate_all
 **registering camera to eyes - estimates the translation/rotation between the cameras and eyes**
 
 
+**ipyhton notebook notes**
+
+import boris
