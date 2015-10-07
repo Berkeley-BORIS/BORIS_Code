@@ -82,7 +82,7 @@ DATA ANALYSIS
 
 python setup.py install
 
-if using python or ipython notebook rather than CLI, do:
+*if using python or ipython notebook rather than CLI, do:*
 
 run setup.py install
 
