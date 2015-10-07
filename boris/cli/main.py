@@ -196,15 +196,21 @@ def stereocalibrate_all():
 @main.command()
 @click.argument('subject_id')
 @click.argument('session_id')
-def cam2eye_register(subject_id, session_id):
+def cam2eye(subject_id, session_id):
 
     """
-    Estimate the rotation and translation between the eyes and cameras
+    Estimate the rotation and translation between the cyclopean eye and one of the cameras
     """
     
     subject = BORISSubject(subject_id)
 
-    for trial in range(1,2):
+    # how many registrations were performed?
+    if session_id == 'inside':
+        numtrials = 4
+    else:
+        numtrials = 2
+
+    for trial in range(1,numtrials+1):
 
         # grab circle grid image directories
         distances = ['50', '100', '450']
@@ -214,16 +220,26 @@ def cam2eye_register(subject_id, session_id):
             board_directories.append(directory_path)
 
 
-    print("Registering cameras and eyes for {subject_id} {session_id} for trial number {tnum} using files in {dpath}...".format(
-        subject_id=subject_id, session_id=session_id, tnum=str(trial), dpath=subject.cam2eye_registration_session_dpath(session_id)))
+        print("Registering cameras and eyes for {subject_id} {session_id} for trial number {tnum} using files in {dpath}...".format(
+            subject_id=subject_id, session_id=session_id, tnum=str(trial), dpath=subject.cam2eye_registration_session_dpath(session_id)))
 
-    cam2eye_register = CamEyeRegister(board_directories,subject.cam2eye_registration_processed_dpath(session_id),subject.stereocalibration_processed_dpath(session_id))
-    cam2eye_register.register()
+        cam2eye_register = CamEyeRegister(board_directories,subject.cam2eye_registration_processed_dpath(session_id),subject.stereocalibration_processed_dpath(session_id),trial)
+        cam2eye_register.register()
 
-    #save parameter estimates
-    print("\nSaving all parameters and images to {rpath}...".format(rpath=subject.cam2eye_registration_processed_dpath(session_id)))
-    cam2eye_register.store_params()
+        #save parameter estimates
+        print("\nSaving all parameters and images to {rpath}...".format(rpath=subject.cam2eye_registration_processed_dpath(session_id)))
+        cam2eye_register.store_params()
 
     print("Done!\n")
+
+@main.command()
+def cam2eye_all():
+    """Register all subjects and all sessions"""
+
+    for subject_id in ['kre', 'sah', 'tki']:
+        for session_id in ['cafe', 'inside', 'nearwork', 'outside1', 'outside2']:
+            cmd = "boris cam2eye {subject_id} {session_id}".format(subject_id=subject_id,
+                                                                 session_id=session_id)
+            subprocess.call(cmd, shell=True)
 
 

@@ -18,11 +18,12 @@ class CamEyeRegister(object):
     '''reads files from a directory of circle grid images. estimate rotation and translation from camera to eyes
     '''
 
-    def __init__(self, data_fpaths, processed_data_fpath, stereocalibration_processed_fpath):
+    def __init__(self, data_fpaths, processed_data_fpath, stereocalibration_processed_fpath, trialnum):
 
-        self.data_fpaths = data_fpaths    # path to directory with images
-        self.processed_data_fpath = processed_data_fpath    # path to directory to save results
-        self.stereocalibration_processed_fpath = stereocalibration_processed_fpath    # path to directory to save results
+        self.data_fpaths                        = data_fpaths    # path to directory with images
+        self.processed_data_fpath               = join(processed_data_fpath,'trial_{tr}'.format(tr=str(trialnum)))    # path to directory to save results
+        self.stereocalibration_processed_fpath  = stereocalibration_processed_fpath    # path to directory to save results
+        self.trialnum                           = trialnum # capture trial num, 1 = before task, 2 = after task
         self._display   = False
         self._dims      = (4,11)    # number of circle row, columns
 
@@ -36,31 +37,45 @@ class CamEyeRegister(object):
         return self._dims
 
     def register(self):
+        ''' perform and assess error of camera pose estimation relative to the cyclopean eyes
+        '''
+
+        # make directory for results and images
+        if not os.path.exists(join(self.processed_data_fpath,'images_used')):
+            os.makedirs(join(self.processed_data_fpath,'images_used'))
+
 
         ### DETECT AND STORE IMAGE POINTS ###
         print 'Detecting Circle Grid points...'
             
         image_coords, circle_images = self.find_circle_centers()
         world_coords                = self.get_circle_world_coords()
-        cam_mat, dist_coeffs        = self.load_camera_params()
+        
+        self.load_camera_params()
 
         ### DETECT AND STORE IMAGE POINTS ###
         print 'Esimating Circle Grid pose...'
         retval, rvec, tvec = cv2.solvePnP(objectPoints=world_coords,
                                       imagePoints=image_coords,
-                                      cameraMatrix=cam_mat,
-                                      distCoeffs=dist_coeffs,
+                                      cameraMatrix=self.cam_mat,
+                                      distCoeffs=self.dist_coeffs,
                                       useExtrinsicGuess=0)
 
-        camera_coords, jac  = cv2.projectPoints(objectPoints=world_coords,rvec=rvec,tvec=tvec,cameraMatrix=cam_mat,distCoeffs=dist_coeffs)
+        camera_coords, jac  = cv2.projectPoints(objectPoints=world_coords,rvec=rvec,tvec=tvec,cameraMatrix=self.cam_mat,distCoeffs=self.dist_coeffs)
         camera_coords       = np.reshape(camera_coords,(132,2))
         error               = np.sqrt(np.power(camera_coords[:,0]-image_coords[:,0],2) + np.power(camera_coords[:,1]-image_coords[:,1],2))
         rms                 = np.sqrt(np.mean(np.power(error,2)))
 
-        print "Transformations found! Saving file..."
+        print "Transformations found!"
         print "solvepnp rms error: " + str(rms)
         print "tvec: " + str(tvec)
         print "rvec: " + str(rvec*(180/np.pi))
+
+        self.rvec = rvec
+        self.tvec = tvec
+        self.rms = rms
+
+        return None
 
 
     def find_circle_centers(self):
@@ -71,6 +86,9 @@ class CamEyeRegister(object):
         image_coords    = []
         point_images   = []
 
+        dist = [50, 100, 450];
+        cnt = 0;
+
         for directory in self.data_fpaths:
 
             img_name    = 'cam1_frame_1.bmp'
@@ -78,20 +96,25 @@ class CamEyeRegister(object):
 
             # load image and find circles
             board_image                 = cv2.imread(os.path.join(directory, img_name),1) 
-            [pattern_was_found,points] = cv2.findCirclesGridDefault(board_image,self._dims,flags=cv2.CALIB_CB_ASYMMETRIC_GRID)
-            points                     = points.squeeze()  # CHANGED: moved squeeze to before corner checking instead of after
+            [pattern_was_found,points]  = cv2.findCirclesGridDefault(board_image,self._dims,flags=cv2.CALIB_CB_ASYMMETRIC_GRID)
+            points                      = points.squeeze()  # CHANGED: moved squeeze to before corner checking instead of after
+            point_image                 = board_image.copy()
 
-            point_image = board_image.copy()
+            # save image
             cv2.drawChessboardCorners(point_image, self._dims, points, pattern_was_found)
-            #cv2.imwrite('./tmp.png',point_image)
+            fname = 'cam1_distance_{distance}cm.bmp'.format(distance=str(dist[cnt]))
+            cv2.imwrite(join(self.processed_data_fpath,'images_used',fname),point_image)
+
             image_coords.append(points)
             point_images.append(point_image)
+
+            cnt += 1
 
         return np.concatenate(image_coords), point_images
 
     def get_circle_world_coords(self):
         """
-        This returns an array of the world coordinates of the centers of the CIRCLES
+        This returns an array of the world coordinates (cyclopean origin) of the centers of the CIRCLES
         in the CIRCLEGRID. Pixel offsets were measured in photoshop and are therefor hard coded.
         This function is specific to the acircles_pattern_grey_DIST.png files used to display the
         circle grid in the experiment. If those images were not used on the screen, DO NOT USE THIS
@@ -154,20 +177,23 @@ class CamEyeRegister(object):
         ''' load distortion coefficients and intrinsics for camera that captured circle grid
         '''
 
-        dist_coeffs = np.loadtxt(join(self.stereocalibration_processed_fpath, "Distortion_cam1.txt"), delimiter=None, ndmin=0)
-        cam_mat     = np.loadtxt(join(self.stereocalibration_processed_fpath, "Intrinsics_cam1.txt"), delimiter=None, ndmin=2)
+        self.dist_coeffs = np.loadtxt(join(self.stereocalibration_processed_fpath, "Distortion_cam1.txt"), delimiter=None, ndmin=0)
+        self.cam_mat     = np.loadtxt(join(self.stereocalibration_processed_fpath, "Intrinsics_cam1.txt"), delimiter=None, ndmin=2)
 
-        return cam_mat, dist_coeffs
+        return None
 
     def store_params(self):
         ''' store results '''
 
-        trace
-        
-        if not os.path.exists(self.processed_data_fpath):
-            os.makedirs(self.processed_data_fpath)
+        np.savez(join(self.processed_data_fpath,'Cam1_pose_and_intrinsics.npz'), rvec=self.rvec, tvec=self.tvec, cam_mat=self.cam_mat, dist_coeffs=self.dist_coeffs)
+        np.savetxt(join(self.processed_data_fpath,'Intrinsics_cam1_copy.txt'), self.cam_mat)
+        np.savetxt(join(self.processed_data_fpath,'Distortion_cam1_copy.txt'), self.dist_coeffs)
+        np.savetxt(join(self.processed_data_fpath,'WorldRotation_cam1.txt'), self.rvec)
+        np.savetxt(join(self.processed_data_fpath,'WorldTranslation_cam1.txt'), self.tvec)
 
-        np.savez(join(self.processed_data_fpath,'cam2eye_tform.npz'), rvec=rvec, tvec=tvec, cam_mat=cam_mat, dist_coeffs=dist_coeffs)
+        calib_params = open(join(self.processed_data_fpath,'Calibration_quality.txt'), 'w')
+        calib_params.write("\n rms: " + str(self.rms))
+        calib_params.close()
 
         return None
 
@@ -179,7 +205,7 @@ if __name__ == '__main__':
     processed_dpath = '../../session_data/processed/cam2eye_registration/kre/kre_cafe/'
     stereo_processed_dpath = '../../session_data/processed/stereocalibration/kre/kre_cafe/'
 
-    cam2eye_register = CamEyeRegister(frames_dpath,processed_dpath,stereo_processed_dpath)
+    cam2eye_register = CamEyeRegister(frames_dpath,processed_dpath,stereo_processed_dpath,1)
     cam2eye_register.register()
 
     #save parameter estimates
